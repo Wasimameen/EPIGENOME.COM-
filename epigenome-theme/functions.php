@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'EPIGENOME_VERSION', '2.0.0' );
+define( 'EPIGENOME_VERSION', '2.1.0' );
 
 require get_template_directory() . '/inc/customizer.php';
 
@@ -30,13 +30,8 @@ add_action( 'after_setup_theme', 'epigenome_setup' );
 function epigenome_assets() {
 	$uri = get_template_directory_uri();
 
-	wp_enqueue_style(
-		'epigenome-fonts',
-		'https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap',
-		array(),
-		null
-	);
-	wp_enqueue_style( 'epigenome-main', $uri . '/assets/css/main.css', array(), EPIGENOME_VERSION );
+	wp_enqueue_style( 'epigenome-fonts', $uri . '/assets/css/fonts.css', array(), EPIGENOME_VERSION );
+	wp_enqueue_style( 'epigenome-main', $uri . '/assets/css/main.css', array( 'epigenome-fonts' ), EPIGENOME_VERSION );
 
 	wp_enqueue_script( 'epigenome-gsap', $uri . '/assets/js/vendor/gsap.min.js', array(), '3.13.0', true );
 	wp_enqueue_script( 'epigenome-scrolltrigger', $uri . '/assets/js/vendor/ScrollTrigger.min.js', array( 'epigenome-gsap' ), '3.13.0', true );
@@ -52,20 +47,6 @@ function epigenome_assets() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'epigenome_assets' );
-
-/**
- * Preconnect for Google Fonts.
- */
-function epigenome_resource_hints( $hints, $relation ) {
-	if ( 'preconnect' === $relation ) {
-		$hints[] = array(
-			'href'        => 'https://fonts.gstatic.com',
-			'crossorigin' => 'anonymous',
-		);
-	}
-	return $hints;
-}
-add_filter( 'wp_resource_hints', 'epigenome_resource_hints', 10, 2 );
 
 /**
  * Listing option helper.

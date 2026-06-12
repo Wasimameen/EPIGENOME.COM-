@@ -18,7 +18,8 @@
 	--gold: #c9a45c;
 	--gold-2: #e3c688;
 	--ink-on-ivory: #1a2b20;
-	--font-display: "Bodoni Moda", "Didot", "Georgia", serif;
+	--font-display: "Cormorant Garamond", "Georgia", serif;
+	--font-carved: "Cinzel", "Trajan Pro", "Georgia", serif;
 	--font-body: "Inter", -apple-system, "Segoe UI", sans-serif;
 	--font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
 	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -179,7 +180,7 @@ a, button, [data-tilt] { cursor: pointer; }
 	left: 0;
 	right: 0;
 	text-align: center;
-	font-family: var(--font-display);
+	font-family: var(--font-carved);
 	font-weight: 400;
 	font-size: clamp(2.6rem, 6vw, 4.4rem);
 	color: var(--ivory);
@@ -350,21 +351,14 @@ a, button, [data-tilt] { cursor: pointer; }
 .kicker { color: var(--gold-2); text-shadow: 0 1px 14px rgba(10, 18, 13, 0.9); }
 .hero__title {
 	margin: 1.6rem 0 0;
-	font-family: var(--font-display);
-	font-weight: 400;
-	font-size: clamp(2.4rem, 9.5vw, 8rem);
-	line-height: 1.04;
-	letter-spacing: 0.01em;
+	font-family: var(--font-carved);
+	font-weight: 700;
+	font-size: clamp(2.2rem, 8.5vw, 7rem);
+	line-height: 1.06;
+	letter-spacing: 0.045em;
 	white-space: nowrap;
-	color: #f6f2e4;
-	text-shadow: 0 2px 10px rgba(10, 18, 13, 0.75), 0 6px 60px rgba(10, 18, 13, 0.9);
-}
-html:not(.js-anim) .hero__title,
-html.reduce-motion .hero__title {
-	background: linear-gradient(110deg, #f6f1e1 35%, var(--gold-2) 52%, #f6f1e1 68%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	-webkit-text-fill-color: transparent;
+	color: #f8f4e6;
+	text-shadow: 0 2px 8px rgba(10, 18, 13, 0.85), 0 8px 60px rgba(10, 18, 13, 0.95);
 }
 .hero__sub {
 	max-width: 42rem;
@@ -446,8 +440,8 @@ html.reduce-motion .hero__title {
 }
 @keyframes marquee { to { transform: translateX(-50%); } }
 .marquee__item {
-	font-family: var(--font-display);
-	font-weight: 400;
+	font-family: var(--font-carved);
+	font-weight: 600;
 	font-size: clamp(1.5rem, 3.6vw, 2.7rem);
 	letter-spacing: 0.05em;
 	white-space: nowrap;
@@ -500,7 +494,7 @@ html.reduce-motion .hero__title {
 .section__title {
 	margin: 0 0 1.8rem;
 	font-family: var(--font-display);
-	font-weight: 400;
+	font-weight: 600;
 	font-size: clamp(2rem, 5vw, 3.9rem);
 	line-height: 1.12;
 	letter-spacing: 0.005em;
@@ -568,8 +562,8 @@ html.reduce-motion .hero__title {
 	border-bottom: 1px solid var(--line);
 }
 .word-break__part {
-	font-family: var(--font-display);
-	font-weight: 400;
+	font-family: var(--font-carved);
+	font-weight: 600;
 	font-size: clamp(2.4rem, 7vw, 5.4rem);
 	line-height: 1;
 	letter-spacing: 0.07em;
@@ -599,7 +593,7 @@ html.reduce-motion .hero__title {
 .stat:hover { background: rgba(26, 42, 32, 0.85); }
 .stat__value {
 	display: block;
-	font-family: var(--font-display);
+	font-family: var(--font-carved);
 	font-size: clamp(2rem, 4vw, 3.1rem);
 	letter-spacing: 0;
 	text-transform: none;
@@ -650,7 +644,8 @@ html.reduce-motion .hero__title {
 .comp__name { margin: 0; font-family: var(--font-body); font-size: 1rem; font-weight: 600; letter-spacing: 0.01em; color: var(--text); }
 .comp__price {
 	margin-top: 0.6rem;
-	font-family: var(--font-display);
+	font-family: var(--font-carved);
+	font-weight: 600;
 	font-size: clamp(1.8rem, 2.7vw, 2.4rem);
 	letter-spacing: 0;
 	text-transform: none;
@@ -674,7 +669,7 @@ html.reduce-motion .hero__title {
 	margin: 0;
 	max-width: 52rem;
 	font-family: var(--font-display);
-	font-weight: 400;
+	font-weight: 500;
 	font-size: clamp(1.2rem, 2.3vw, 1.65rem);
 	line-height: 1.5;
 	color: var(--text);
@@ -718,7 +713,7 @@ html.reduce-motion .hero__title {
 .scene__title {
 	margin: 0 0 0.8rem;
 	font-family: var(--font-display);
-	font-weight: 400;
+	font-weight: 600;
 	font-size: 1.5rem;
 	color: var(--ivory);
 }
@@ -733,21 +728,22 @@ html.reduce-motion .hero__title {
 .section--terms .section__head { justify-content: center; }
 .section--terms .section__rule { max-width: 8rem; }
 .terms__price {
-	font-family: var(--font-display);
-	font-weight: 400;
-	font-size: clamp(3.2rem, 12vw, 9rem);
+	font-family: var(--font-carved);
+	font-weight: 700;
+	font-size: clamp(2.8rem, 10vw, 7.5rem);
 	line-height: 1;
-	letter-spacing: 0.01em;
+	letter-spacing: 0.03em;
 	white-space: nowrap;
-	color: var(--gold-2);
-	text-shadow: 0 2px 12px rgba(10, 18, 13, 0.8), 0 8px 70px rgba(10, 18, 13, 0.95);
-}
-html:not(.js-anim) .terms__price,
-html.reduce-motion .terms__price {
-	background: linear-gradient(120deg, var(--gold-2), var(--gold) 45%, #f8ead0 60%, var(--gold) 80%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	-webkit-text-fill-color: transparent;
+	width: fit-content;
+	margin-inline: auto;
+	padding: 0.32em 0.55em;
+	border: 1px solid rgba(201, 164, 92, 0.35);
+	border-radius: 20px;
+	background: var(--panel-strong);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+	color: #e9c87f;
+	text-shadow: 0 2px 10px rgba(10, 18, 13, 0.8);
 }
 .terms__currency {
 	margin: 1.2rem 0 2rem;
@@ -787,7 +783,7 @@ html.reduce-motion .terms__price {
 .broker__sig-name {
 	font-family: var(--font-display);
 	font-style: italic;
-	font-weight: 400;
+	font-weight: 500;
 	font-size: 1.9rem;
 	color: var(--ivory);
 }

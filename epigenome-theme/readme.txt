@@ -67,7 +67,8 @@ gentle parallax.
 
 * GSAP 3.13, ScrollTrigger, Lenis and Three.js r149 are bundled locally
   (no CDN dependency).
-* Fonts load from Google Fonts (Bodoni Moda, Inter, IBM Plex Mono).
+* Fonts are self-hosted in the theme (Cinzel, Cormorant Garamond, Inter,
+  IBM Plex Mono) — no Google Fonts request, GDPR-friendly.
 * The 3D scene drops detail on small screens, pauses in background tabs,
   and disappears gracefully when WebGL is unavailable (solid green
   backdrop remains).
@@ -80,4 +81,4 @@ gentle parallax.
 * GSAP & ScrollTrigger — gsap.com (standard "no charge" license)
 * Three.js — threejs.org (MIT)
 * Lenis smooth scroll — MIT, darkroom.engineering
-* Fonts — Google Fonts (OFL)
+* Fonts — Cinzel, Cormorant Garamond, Inter, IBM Plex Mono (OFL, self-hosted)

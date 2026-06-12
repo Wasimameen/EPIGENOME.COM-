@@ -57,66 +57,6 @@
 		return el.querySelectorAll(mode === 'words' ? '.word' : '.char');
 	}
 
-	/* ---------------------------------------------------------------------
-	   Gradient text across split chars.
-	   background-clip:text on a parent doesn't reach into the overflow-
-	   hidden char masks, so each char gets the gradient sized to the full
-	   element and offset to its own position — then a shared shimmer loop
-	   slides all of them together.
-	   --------------------------------------------------------------------- */
-	function gradientChars(el, chars, gradient) {
-		var width = 1;
-
-		function layout() {
-			var elRect = el.getBoundingClientRect();
-			width = Math.max(el.offsetWidth, 1);
-			chars.forEach(function (c) {
-				var off = c.getBoundingClientRect().left - elRect.left;
-				c.setAttribute('data-goff', off);
-				c.style.backgroundImage = gradient;
-				c.style.backgroundSize = width + 'px 100%';
-				c.style.backgroundRepeat = 'repeat-x';
-				c.style.webkitBackgroundClip = 'text';
-				c.style.backgroundClip = 'text';
-				c.style.webkitTextFillColor = 'transparent';
-				c.style.color = 'transparent';
-			});
-		}
-
-		var proxy = { s: 0 };
-		function paint() {
-			var shift = proxy.s * width;
-			chars.forEach(function (c) {
-				c.style.backgroundPositionX =
-					-(parseFloat(c.getAttribute('data-goff')) + shift) + 'px';
-			});
-		}
-
-		layout();
-		paint();
-		gsap.to(proxy, {
-			s: 1,
-			duration: 9,
-			ease: 'none',
-			repeat: -1,
-			onUpdate: paint
-		});
-
-		var resizeTimer;
-		window.addEventListener('resize', function () {
-			clearTimeout(resizeTimer);
-			resizeTimer = setTimeout(function () {
-				layout();
-				paint();
-			}, 150);
-		});
-	}
-
-	var GRADIENT_HERO =
-		'linear-gradient(110deg, #f6f1e1 32%, #e3c688 50%, #f6f1e1 64%, #d8ba79 88%)';
-	var GRADIENT_GOLD =
-		'linear-gradient(120deg, #e3c688, #c9a45c 45%, #f8ead0 60%, #c9a45c 80%)';
-
 	/* Scale a nowrap headline down until it fits its container. */
 	function fitText(el) {
 		el.style.fontSize = '';
@@ -288,14 +228,12 @@
 				heroChars = chars;
 				fitTargets.push(el);
 				fitText(el);
-				gradientChars(el, Array.prototype.slice.call(chars), GRADIENT_HERO);
 				gsap.set(chars, { yPercent: 112 });
 				return;
 			}
 			if (el.classList.contains('terms__price')) {
 				fitTargets.push(el);
 				fitText(el);
-				gradientChars(el, Array.prototype.slice.call(chars), GRADIENT_GOLD);
 			}
 			gsap.set(chars, { yPercent: 112 });
 			ScrollTrigger.create({
