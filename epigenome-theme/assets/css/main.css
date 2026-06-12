@@ -9,11 +9,12 @@
 
 :root {
 	--paper: #f6f3ec;
-	--paper-2: #efebe1;
+	--paper-2: #0e1322;
 	--ink: #16140f;
 	--ink-soft: #57534a;
 	--hairline: #ddd8cb;
-	--gold: #a8801f;
+	--gold: #d9b35c;
+	--neon: #38e8d2;
 	--font-display: "Cormorant Garamond", "Georgia", serif;
 	--font-body: "Inter", -apple-system, "Segoe UI", sans-serif;
 	--font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
@@ -24,18 +25,19 @@
 	--z-cursor: 90;
 	--z-preloader: 100;
 
+	--bg: #0a0d17;
+	--fg: #edf2fd;
+	--fg-soft: #a3b1cc;
+	--line: rgba(163, 185, 235, 0.17);
+}
+
+/* the terms moment: the dark page inverts to warm paper */
+html.inverted {
 	--bg: var(--paper);
 	--fg: var(--ink);
 	--fg-soft: var(--ink-soft);
 	--line: var(--hairline);
-}
-
-/* the terms moment: the whole page inverts to ink */
-html.inverted {
-	--bg: #131109;
-	--fg: #f3efe5;
-	--fg-soft: #b3ada0;
-	--line: #36322a;
+	--gold: #a8801f;
 }
 
 *,
@@ -58,6 +60,23 @@ body {
 	transition: background-color 0.9s var(--ease), color 0.9s var(--ease);
 }
 
+/* futuristic backdrop: corner glows + faint grid */
+body::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background:
+		radial-gradient(64rem 42rem at 88% -12%, rgba(56, 232, 210, 0.08), transparent 62%),
+		radial-gradient(56rem 40rem at -12% 112%, rgba(126, 96, 255, 0.08), transparent 62%),
+		repeating-linear-gradient(0deg, rgba(163, 185, 235, 0.05) 0 1px, transparent 1px 84px),
+		repeating-linear-gradient(90deg, rgba(163, 185, 235, 0.05) 0 1px, transparent 1px 84px);
+	opacity: 1;
+	transition: opacity 0.9s var(--ease);
+}
+html.inverted body::before { opacity: 0; }
+
 /* paper grain */
 body::after {
 	content: "";
@@ -69,7 +88,7 @@ body::after {
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
 }
 
-::selection { background: rgba(168, 128, 31, 0.25); }
+::selection { background: rgba(56, 232, 210, 0.3); }
 
 img, svg { display: block; max-width: 100%; }
 
@@ -77,7 +96,7 @@ a { color: inherit; text-decoration: none; }
 a, button { cursor: pointer; }
 
 :focus-visible {
-	outline: 2px solid var(--gold);
+	outline: 2px solid var(--neon);
 	outline-offset: 3px;
 	border-radius: 2px;
 }
@@ -143,7 +162,7 @@ a, button { cursor: pointer; }
 	font-weight: 500;
 	font-size: clamp(1.4rem, 3.4vw, 2.2rem);
 	letter-spacing: 0.14em;
-	color: var(--ink);
+	color: #edf2fd;
 }
 .preloader__count { font-size: 0.8rem; }
 .no-js .preloader, html.reduce-motion .preloader { display: none; }
@@ -195,7 +214,7 @@ a, button { cursor: pointer; }
 .progress__fill {
 	display: block;
 	height: 100%;
-	background: var(--gold);
+	background: linear-gradient(90deg, var(--neon), var(--gold));
 	transform: scaleX(0);
 	transform-origin: left;
 }
@@ -410,7 +429,7 @@ html.reduce-motion .sky { display: none; }
 	padding: 8rem 0 5rem;
 	overflow: clip;
 }
-.kicker { color: var(--gold); }
+.kicker { color: var(--neon); }
 .hero__title {
 	margin: 1.6rem 0 0;
 	font-family: var(--font-display);
@@ -499,7 +518,7 @@ html.reduce-motion .sky { display: none; }
 	width: 7px;
 	height: 7px;
 	border-radius: 50%;
-	background: var(--gold);
+	background: var(--neon);
 	flex: none;
 }
 
@@ -661,6 +680,28 @@ html.reduce-motion .sky { display: none; }
 @media (max-width: 56rem) { .scenes { grid-template-columns: 1fr; gap: 2rem; } }
 
 /* --------------------------------------------------------------------------
+   Flight film
+   -------------------------------------------------------------------------- */
+.film {
+	margin: 3.2rem 0 0;
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	overflow: hidden;
+	background: #05070d;
+	transition: border-color 0.9s;
+}
+.film__video { display: block; width: 100%; height: auto; }
+.film__cap {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.8rem 1.1rem;
+	border-top: 1px solid var(--line);
+	font-size: 0.6rem;
+}
+.film__cap span:last-child { color: var(--neon); }
+
+/* --------------------------------------------------------------------------
    05 · Terms — the inversion
    -------------------------------------------------------------------------- */
 .section--terms { text-align: center; }
@@ -763,7 +804,7 @@ html.reduce-motion .sky { display: none; }
 .offer-form__direct a { color: var(--gold); text-transform: none; letter-spacing: 0.04em; }
 .hp-field { position: absolute !important; left: -999rem; top: -999rem; }
 .form-status { margin-bottom: 1.4rem; padding: 0.9rem 1.1rem; border-radius: 10px; font-size: 0.94rem; }
-.form-status--ok { border: 1px solid var(--gold); color: var(--fg); }
+.form-status--ok { border: 1px solid var(--neon); color: var(--fg); }
 .form-status--err { border: 1px solid #b3502e; color: #8a3414; }
 @media (max-width: 56rem) {
 	.offer { grid-template-columns: 1fr; }

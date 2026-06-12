@@ -217,6 +217,16 @@ $epigenome_comps = array(
 				<p><?php echo esc_html( sprintf( __( '%s is not nine letters and an extension. It is what owning the category\'s name makes possible — and what not owning it costs, quietly, every year a competitor holds it instead.', 'epigenome' ), $domain ) ); ?></p>
 			</div>
 
+			<figure class="film" data-reveal>
+				<video class="film__video" autoplay muted loop playsinline preload="metadata" poster="<?php echo esc_url( get_template_directory_uri() . '/assets/video/flight-poster.jpg' ); ?>">
+					<source src="<?php echo esc_url( get_template_directory_uri() . '/assets/video/flight.mp4' ); ?>" type="video/mp4">
+				</video>
+				<figcaption class="film__cap mono">
+					<span><?php esc_html_e( 'Flight film — the name at altitude', 'epigenome' ); ?></span>
+					<span><?php echo esc_html( $domain ); ?></span>
+				</figcaption>
+			</figure>
+
 			<div class="scenes">
 				<article class="scene" data-reveal>
 					<span class="scene__no mono" data-scramble>SCENE — A</span>

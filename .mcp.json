@@ -15,6 +15,17 @@
       "type": "stdio",
       "command": "./tools/pixel-mcp/pixel-mcp",
       "args": []
+    },
+    "veo2": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "./tools/mcp-veo2/dist/index.js"
+      ],
+      "env": {
+        "GOOGLE_API_KEY": "your_key_here",
+        "STORAGE_DIR": "./generated-videos"
+      }
     }
   }
 }

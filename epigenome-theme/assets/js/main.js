@@ -177,6 +177,11 @@
 	   Reduced-motion path
 	   --------------------------------------------------------------------- */
 	function finalizeStatic() {
+		document.querySelectorAll('.film__video').forEach(function (v) {
+			v.removeAttribute('autoplay');
+			v.setAttribute('controls', 'controls');
+			try { v.pause(); } catch (e) { /* not started */ }
+		});
 		document.querySelectorAll('[data-counter]').forEach(function (el) {
 			var target = parseFloat(el.getAttribute('data-counter')) || 0;
 			var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
@@ -556,42 +561,124 @@
 			planeH = rect.height;
 		}
 
-		function placePlane(p) {
+		/* ---- flight physics: the plane chases a target on the route ----
+		   spring-damper pursuit gives natural lag and overshoot; pitch
+		   follows vertical speed; roll foreshortens through turns; gusty
+		   turbulence layers on top; hard scroll bursts trigger a loop. */
+		var sim = { x: 0, y: 0, vx: 0, vy: 0, alive: false, rot: 0 };
+		var SPRING = 11;
+		var DAMP = 5.6;
+		var loop = { active: false, t: 0, r: 60 };
+		var loopCooldownUntil = 0;
+		var simTime = 0;
+
+		function stepPlane(dt) {
 			if (!flightLen || !planeEl) {
 				return;
 			}
+			var p = Math.min(Math.max(planeP, 0), 1);
 			var lenAt = flightLen * p;
-			var pt = trailPath.getPointAtLength(lenAt);
-			var ahead = trailPath.getPointAtLength(Math.min(lenAt + 22, flightLen));
-			var behind = trailPath.getPointAtLength(Math.max(lenAt - 22, 0));
-			var dx = ahead.x - behind.x;
-			var dy = ahead.y - behind.y;
-			var deg = (Math.atan2(dy, dx) * 180) / Math.PI;
-			/* hysteresis keeps the flip from fluttering near vertical */
-			var wantFlip = flipped
-				? Math.abs(deg) > 80
-				: Math.abs(deg) > 100;
-			if (wantFlip !== flipped) {
-				flipped = wantFlip;
-				gsap.to(planeFlip, {
-					scaleX: flipped ? -1 : 1,
-					duration: 0.45,
-					ease: 'power2.inOut',
-					transformOrigin: '50% 50%'
-				});
+			var target = trailPath.getPointAtLength(lenAt);
+			trailPath.style.strokeDashoffset = flightLen * (1 - p);
+
+			if (!sim.alive) {
+				sim.x = target.x;
+				sim.y = target.y;
+				sim.alive = true;
 			}
-			if (flipped) {
-				deg = deg > 0 ? deg - 180 : deg + 180;
-				deg = -deg;
+			simTime += dt;
+
+			/* spring-damper pursuit */
+			var ax = (target.x - sim.x) * SPRING - sim.vx * DAMP;
+			var ay = (target.y - sim.y) * SPRING - sim.vy * DAMP;
+			sim.vx += ax * dt;
+			sim.vy += ay * dt;
+			sim.x += sim.vx * dt;
+			sim.y += sim.vy * dt;
+
+			/* gusty turbulence — two incommensurate sines per axis */
+			var speed = Math.hypot(sim.vx, sim.vy);
+			var gust = 1 + Math.min(speed / 600, 1.6);
+			var tx = (Math.sin(simTime * 1.7) + Math.sin(simTime * 2.9 + 1.3)) * 1.4 * gust;
+			var ty = (Math.sin(simTime * 2.2 + 0.7) + Math.sin(simTime * 3.7 + 2.1)) * 2.1 * gust;
+
+			/* heading from velocity; fall back to path tangent when slow */
+			var hdgX = sim.vx;
+			var hdgY = sim.vy;
+			if (speed < 26) {
+				var ahead = trailPath.getPointAtLength(Math.min(lenAt + 24, flightLen));
+				hdgX = ahead.x - target.x;
+				hdgY = ahead.y - target.y;
 			}
-			deg = gsap.utils.clamp(-32, 32, deg);
+			var deg = (Math.atan2(hdgY, Math.max(Math.abs(hdgX), 1) * (hdgX < 0 ? -1 : 1)) * 180) / Math.PI;
+			/* pitch exaggeration from climb/dive rate */
+			deg = gsap.utils.clamp(-38, 38, deg * 0.9 + sim.vy * 0.012);
+
+			/* takeoff: resting at the start of the route */
+			if (p < 0.004) {
+				deg = 0;
+			}
+			/* landing flare at the end */
+			if (p > 0.985) {
+				deg *= (1 - p) / 0.015;
+			}
+
+			var px2 = sim.x + tx;
+			var py2 = sim.y + ty;
+			var rotOut;
+
+			/* loop-the-loop overlay */
+			if (loop.active) {
+				loop.t += dt / 1.15;
+				if (loop.t >= 1) {
+					loop.active = false;
+				} else {
+					var e = loop.t < 0.5
+						? 2 * loop.t * loop.t
+						: 1 - Math.pow(-2 * loop.t + 2, 2) / 2;
+					var ang = e * Math.PI * 2;
+					px2 += Math.sin(ang) * loop.r * 0.55;
+					py2 -= (1 - Math.cos(ang)) * loop.r * 0.5;
+					rotOut = deg - e * 360;
+				}
+			}
+			if (rotOut === undefined) {
+				rotOut = deg;
+			}
+
+			/* roll foreshortening through heading changes */
+			var turnRate = (rotOut - sim.rot) / Math.max(dt, 0.001);
+			sim.rot = rotOut;
+			var squash = loop.active
+				? 1
+				: 1 - Math.min(Math.abs(turnRate) * 0.00045, 0.14);
+
 			gsap.set(planeEl, {
-				x: pt.x - planeW / 2,
-				y: pt.y - planeH / 2,
-				rotation: (flipped ? -deg : deg),
+				x: px2 - planeW / 2,
+				y: py2 - planeH / 2,
+				rotation: rotOut,
+				scaleY: squash,
 				transformOrigin: '50% 50%'
 			});
-			trailPath.style.strokeDashoffset = flightLen * (1 - p);
+		}
+
+		/* public hook: EPI_FLIGHT.stunt(strength) rolls a loop on demand */
+		window.EPI_FLIGHT = {
+			stunt: function (s) { triggerLoop(s || 70); }
+		};
+
+		function triggerLoop(strength) {
+			var now = performance.now();
+			if (loop.active || now < loopCooldownUntil) {
+				return;
+			}
+			if (planeP < 0.05 || planeP > 0.92) {
+				return;
+			}
+			loop.active = true;
+			loop.t = 0;
+			loop.r = gsap.utils.clamp(46, 110, 40 + strength * 0.7);
+			loopCooldownUntil = now + 4200;
 		}
 
 		if (planeEl && flightSvg) {
@@ -603,20 +690,13 @@
 					planeTargetP = self.progress;
 				}
 			});
-			gsap.ticker.add(function () {
+			var lastTick = 0;
+			gsap.ticker.add(function (time) {
+				var dt = Math.min(Math.max(time - lastTick, 0.001), 0.05);
+				lastTick = time;
 				planeP += (planeTargetP - planeP) * 0.07;
-				placePlane(Math.min(Math.max(planeP, 0), 1));
+				stepPlane(dt);
 			});
-			/* idle bob + the propeller never stops */
-			if (planeBob) {
-				gsap.to(planeBob, {
-					y: 5,
-					duration: 1.8,
-					ease: 'sine.inOut',
-					yoyo: true,
-					repeat: -1
-				});
-			}
 			if (propEl) {
 				propTween = gsap.to(propEl, {
 					rotation: 360,
@@ -636,6 +716,9 @@
 					speedTo(gsap.utils.clamp(0, 0.7, v / 30));
 					if (propTween) {
 						propTween.timeScale(1 + Math.min(v / 25, 2.5));
+					}
+					if (v > 46) {
+						triggerLoop(v);
 					}
 				});
 			}

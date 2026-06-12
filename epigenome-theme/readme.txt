@@ -62,13 +62,29 @@ Living in the background is an illustrated sky, drawn in the same ink:
 a detailed pixel-art vintage aircraft (hand-shaded sprite with
 dithered highlights, gold cowl, rudder stripes, roundel and a
 propeller-blur disc, built with the Aseprite/pixel-mcp pipeline)
-flies a dashed route through the entire page as you scroll,
-its trail turning solid behind it, banking with the curves, bobbing
-while you rest, and showing speed lines when you scroll fast. Around
+flies a dashed route through the entire page on real flight physics:
+a spring-damper pursuit chases the scroll target, so the plane lags,
+overshoots and settles naturally; pitch follows climb rate, roll
+foreshortens through turns, layered turbulence keeps it alive at rest,
+it sits level for takeoff and flares for landing — and a hard scroll
+burst sends it through a full loop-the-loop (also on demand via
+EPI_FLIGHT.stunt() in the console). Around
 it: engraved clouds that drift, a hot-air balloon rising past the
 copy, a flock of birds, a slowly turning compass rosette and a faint
 DNA helix, all parallaxed at different depths. Everything respects
 prefers-reduced-motion.
+
+== The flight film ==
+
+The "What it becomes" section carries a 7-second looping cinematic
+film built from a public-domain U.S. Air Force photograph of a P-51
+Mustang (by Tech. Sgt. Ben Bloker), animated with a slow push-in,
+banking drift, fog parallax, a gold glint sweep, dark teal grade and
+film grain. Replace it any time: drop a new clip at
+assets/video/flight.mp4 (+ flight-poster.jpg). A ready-made Google
+Veo 2 prompt and the registered veo2 MCP server live in
+tools/mcp-veo2/ — add your Google API key and ask Claude to generate
+the upgrade.
 
 == Performance / motion notes ==
 
@@ -85,3 +101,5 @@ prefers-reduced-motion.
 * GSAP & ScrollTrigger — gsap.com (standard "no charge" license)
 * Lenis smooth scroll — MIT, darkroom.engineering
 * Fonts — Cinzel, Cormorant Garamond, Inter, IBM Plex Mono (OFL, self-hosted)
+* Flight film — derived from "P-51 Mustang edit1" (U.S. Air Force,
+  public domain, via Wikimedia Commons)
