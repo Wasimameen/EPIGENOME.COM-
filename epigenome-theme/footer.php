@@ -7,9 +7,9 @@
 ?>
 <footer class="footer">
 	<div class="container footer__inner">
-		<div class="footer__brand mono" data-scramble><?php echo esc_html( epigenome_opt( 'domain_name' ) ); ?></div>
-		<div class="footer__meta">
-			<span class="mono"><?php esc_html_e( 'Transfer via Escrow.com', 'epigenome' ); ?></span>
+		<div class="footer__brand" data-scramble><?php echo esc_html( epigenome_opt( 'domain_name' ) ); ?></div>
+		<div class="footer__meta mono">
+			<span><?php esc_html_e( 'Transfer via Escrow.com', 'epigenome' ); ?></span>
 			<span class="footer__dot" aria-hidden="true"></span>
 			<a class="footer__mail" href="mailto:<?php echo esc_attr( antispambot( epigenome_opt( 'contact_email' ) ) ); ?>"><?php echo esc_html( antispambot( epigenome_opt( 'contact_email' ) ) ); ?></a>
 			<?php if ( epigenome_opt( 'contact_phone' ) ) : ?>

@@ -49,58 +49,29 @@ installing any SMTP plugin (e.g. WP Mail SMTP) fixes deliverability. A spam
 honeypot is built in. Every submission also shows the buyer your direct email
 as a fallback.
 
-== The night-city scene ==
+== Motion ==
 
-The page floats over a scroll-driven Three.js flight above a futuristic
-Manhattan at night. The hero looks straight down on thousands of
-instanced towers with lit windows; scrolling dives the camera into the
-street canyons, where it swings left and right between buildings —
-banking into every turn — past neon EPIGENOME.COM billboards, animated
-avenue traffic and blinking rooftop beacons, then climbs to the crown
-of the tallest tower, where a holographic DNA helix rotates around a
-gold diamond beside the asking price. Mouse movement adds parallax.
-
-Photographic realism: the towers nearest the flight path and a share
-of the full skyline are textured with real Manhattan night photographs,
-the horizon is a real graded panorama of Lower Manhattan wrapped
-around the scene, and glass/street reflections come from a real
-night-city HDRI environment. Photo textures load progressively and
-fall back to the procedural facades if missing.
-
-Cinematic realism stack: per-floor window lighting baked into the
-facades (lit floors in runs, dark after-hours floors, glowing lobbies,
-dark mechanical tops), stepped setbacks and rooftop penthouses,
-image-based sky reflections on glass towers and rain-slick streets, a
-gradient sky dome, sweeping searchlights, blinking aircraft, and an
-UnrealBloom post-processing pass with gamma-corrected output (desktop
-only). Add ?epi_quality=low to the address to force the lighter
-mobile-grade scene on any device.
+The design is quiet — warm paper, ink, hairlines — and the motion is
+the craft: a split-curtain intro that plays once per session, masked
+letter and line reveals, a velocity-skewed marquee, comparable sales
+that wipe in as a ledger, an odometer price whose digits roll into
+place, a thin ink thread that draws itself down the page as you
+scroll, a full-page ink inversion while you read the terms, magnetic
+buttons and an ink cursor. Everything respects
+prefers-reduced-motion.
 
 == Performance / motion notes ==
 
-* GSAP 3.13, ScrollTrigger, Lenis, Three.js r147 and its bloom
-  post-processing passes are bundled locally
+* GSAP 3.13, ScrollTrigger and Lenis are bundled locally
   (no CDN dependency).
 * Fonts are self-hosted in the theme (Cinzel, Cormorant Garamond, Inter,
   IBM Plex Mono) — no Google Fonts request, GDPR-friendly.
-* The 3D scene drops detail on small screens, pauses in background tabs,
-  and disappears gracefully when WebGL is unavailable (solid green
-  backdrop remains).
 * All animation respects prefers-reduced-motion: users who ask for less
-  motion get an instant, fully readable page with a still scene frame.
+  motion get an instant, fully readable page.
 * The intro preloader plays once per browser session.
 
 == Credits ==
 
 * GSAP & ScrollTrigger — gsap.com (standard "no charge" license)
-* Three.js — threejs.org (MIT)
 * Lenis smooth scroll — MIT, darkroom.engineering
 * Fonts — Cinzel, Cormorant Garamond, Inter, IBM Plex Mono (OFL, self-hosted)
-* Photo assets (assets/img, graded/cropped derivatives):
-  - "New York Midtown Skyline at night - Jan 2006" by Diliff,
-    CC BY-SA 3.0 (facade textures) — commons.wikimedia.org
-  - "Lower Manhattan from Jersey City November 2014 panorama 3" by
-    King of Hearts, CC BY-SA 3.0 (horizon backdrop) — commons.wikimedia.org
-  - "Shanghai Bund" HDRI tonemap — Poly Haven, CC0 (environment
-    reflections) — polyhaven.com
-  These derivative images remain under their respective licenses.

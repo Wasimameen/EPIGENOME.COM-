@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'EPIGENOME_VERSION', '3.2.0' );
+define( 'EPIGENOME_VERSION', '4.0.0' );
 
 require get_template_directory() . '/inc/customizer.php';
 
@@ -36,13 +36,10 @@ function epigenome_assets() {
 	wp_enqueue_script( 'epigenome-gsap', $uri . '/assets/js/vendor/gsap.min.js', array(), '3.13.0', true );
 	wp_enqueue_script( 'epigenome-scrolltrigger', $uri . '/assets/js/vendor/ScrollTrigger.min.js', array( 'epigenome-gsap' ), '3.13.0', true );
 	wp_enqueue_script( 'epigenome-lenis', $uri . '/assets/js/vendor/lenis.min.js', array(), '1.3.8', true );
-	wp_enqueue_script( 'epigenome-three', $uri . '/assets/js/vendor/three.min.js', array(), '0.147.0', true );
-	wp_enqueue_script( 'epigenome-three-post', $uri . '/assets/js/vendor/three-post.js', array( 'epigenome-three' ), '0.147.0', true );
-	wp_enqueue_script( 'epigenome-scene', $uri . '/assets/js/scene.js', array( 'epigenome-three', 'epigenome-three-post' ), EPIGENOME_VERSION, true );
 	wp_enqueue_script(
 		'epigenome-main',
 		$uri . '/assets/js/main.js',
-		array( 'epigenome-gsap', 'epigenome-scrolltrigger', 'epigenome-lenis', 'epigenome-scene' ),
+		array( 'epigenome-gsap', 'epigenome-scrolltrigger', 'epigenome-lenis' ),
 		EPIGENOME_VERSION,
 		true
 	);

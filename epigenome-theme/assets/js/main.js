@@ -1,7 +1,8 @@
 /* ==========================================================================
-   EPIGENOME.COM — animation engine
-   Lenis smooth scroll · GSAP ScrollTrigger · monument-scene scroll driver ·
-   scramble labels · counters · magnetic buttons · tilt cards · cursor
+   EPIGENOME.COM — paper edition motion
+   Lenis smooth scroll · curtain preloader · masked line/char reveals ·
+   rolling odometer price · velocity-skewed marquee · self-drawing thread ·
+   full-page ink inversion at the terms · magnetic buttons · ink cursor
    ========================================================================== */
 
 (function () {
@@ -14,7 +15,6 @@
 	var finePointer =
 		window.matchMedia && window.matchMedia('(pointer: fine)').matches;
 
-	/* If anything goes wrong, never leave content hidden. */
 	function failSafe() {
 		docEl.classList.remove('js-anim');
 		var pre = document.getElementById('preloader');
@@ -24,37 +24,70 @@
 	}
 
 	/* ---------------------------------------------------------------------
-	   Text splitting
+	   Splitting
 	   --------------------------------------------------------------------- */
-	function splitText(el, mode) {
+	function splitChars(el) {
 		var text = el.textContent;
 		el.setAttribute('aria-label', text);
 		el.textContent = '';
 		var frag = document.createDocumentFragment();
-		var parts = mode === 'words' ? text.split(/(\s+)/) : text.split('');
-
-		parts.forEach(function (part) {
-			if (/^\s+$/.test(part)) {
+		text.split('').forEach(function (ch) {
+			if (ch === ' ') {
 				frag.appendChild(document.createTextNode(' '));
-				return;
-			}
-			if (part === '') {
 				return;
 			}
 			var mask = document.createElement('span');
 			mask.className = 'char-mask';
 			mask.setAttribute('aria-hidden', 'true');
 			var inner = document.createElement('span');
-			inner.className = mode === 'words' ? 'word' : 'char';
-			inner.textContent = part === ' ' ? ' ' : part;
+			inner.className = 'char';
+			inner.textContent = ch;
 			mask.appendChild(inner);
 			frag.appendChild(mask);
-			if (mode === 'chars' && part === ' ') {
-				frag.appendChild(document.createTextNode(' '));
-			}
 		});
 		el.appendChild(frag);
-		return el.querySelectorAll(mode === 'words' ? '.word' : '.char');
+		return el.querySelectorAll('.char');
+	}
+
+	/* split into visual lines (words grouped by their offsetTop) */
+	function splitLines(el) {
+		var text = el.textContent;
+		el.setAttribute('aria-label', text);
+		el.textContent = '';
+		var words = text.split(/\s+/);
+		words.forEach(function (w, i) {
+			var span = document.createElement('span');
+			span.textContent = w;
+			span.style.display = 'inline-block';
+			el.appendChild(span);
+			if (i < words.length - 1) {
+				el.appendChild(document.createTextNode(' '));
+			}
+		});
+		var lines = [];
+		var lastTop = null;
+		Array.prototype.forEach.call(el.children, function (span) {
+			var top = span.offsetTop;
+			if (top !== lastTop) {
+				lines.push([]);
+				lastTop = top;
+			}
+			lines[lines.length - 1].push(span);
+		});
+		el.textContent = '';
+		var lineEls = [];
+		lines.forEach(function (lineWords) {
+			var mask = document.createElement('span');
+			mask.className = 'line-mask';
+			mask.setAttribute('aria-hidden', 'true');
+			var line = document.createElement('span');
+			line.className = 'line';
+			line.textContent = lineWords.map(function (s) { return s.textContent; }).join(' ');
+			mask.appendChild(line);
+			el.appendChild(mask);
+			lineEls.push(line);
+		});
+		return lineEls;
 	}
 
 	/* Scale a nowrap headline down until it fits its container. */
@@ -68,7 +101,7 @@
 	}
 
 	/* ---------------------------------------------------------------------
-	   Scramble — labels decode through DNA bases before resolving
+	   Scramble — labels decode through DNA bases
 	   --------------------------------------------------------------------- */
 	var BASES = 'ACGTACGTacgt';
 
@@ -78,7 +111,6 @@
 		var start = null;
 		duration = duration || 900;
 
-		/* guarantee resolution even if rAF is throttled or interrupted */
 		setTimeout(function () {
 			el.textContent = original;
 		}, duration + 300);
@@ -110,7 +142,39 @@
 	}
 
 	/* ---------------------------------------------------------------------
-	   Reduced-motion path: show everything, set final values, bail out
+	   Odometer — every digit rolls to its place
+	   --------------------------------------------------------------------- */
+	function buildOdometer(el) {
+		var text = el.textContent;
+		el.textContent = '';
+		var strips = [];
+		text.split('').forEach(function (ch) {
+			if (/[0-9]/.test(ch)) {
+				var odo = document.createElement('span');
+				odo.className = 'odo';
+				odo.setAttribute('aria-hidden', 'true');
+				var strip = document.createElement('span');
+				strip.className = 'odo__strip';
+				for (var d = 0; d <= 9; d++) {
+					var cell = document.createElement('span');
+					cell.textContent = String(d);
+					strip.appendChild(cell);
+				}
+				odo.appendChild(strip);
+				el.appendChild(odo);
+				strips.push({ strip: strip, target: parseInt(ch, 10) });
+			} else {
+				var plain = document.createElement('span');
+				plain.textContent = ch;
+				plain.setAttribute('aria-hidden', 'true');
+				el.appendChild(plain);
+			}
+		});
+		return strips;
+	}
+
+	/* ---------------------------------------------------------------------
+	   Reduced-motion path
 	   --------------------------------------------------------------------- */
 	function finalizeStatic() {
 		document.querySelectorAll('[data-counter]').forEach(function (el) {
@@ -139,7 +203,7 @@
 		var LenisCtor = window.Lenis;
 		if (LenisCtor) {
 			lenis = new LenisCtor({
-				duration: 1.15,
+				duration: 1.18,
 				easing: function (t) {
 					return Math.min(1, 1.001 - Math.pow(2, -10 * t));
 				}
@@ -153,13 +217,11 @@
 
 		function scrollTo(target) {
 			if (lenis) {
-				lenis.scrollTo(target, { offset: -90 });
+				lenis.scrollTo(target, { offset: -70 });
 			} else if (typeof target !== 'number') {
 				target.scrollIntoView({ behavior: 'smooth' });
 			}
 		}
-
-		/* anchor links ride the smooth scroller */
 		document.querySelectorAll('a[href^="#"]').forEach(function (link) {
 			link.addEventListener('click', function (e) {
 				var id = link.getAttribute('href');
@@ -174,33 +236,42 @@
 			});
 		});
 
-		/* ---- monument scene: camera rides the page scroll ---- */
-		if (window.EPI_SCENE) {
-			window.EPI_SCENE.driven = true;
-			ScrollTrigger.create({
-				start: 0,
-				end: 'max',
-				onUpdate: function (self) {
-					window.EPI_SCENE.setProgress(self.progress);
-				}
-			});
-		}
-
-		/* ---- scroll progress bar ---- */
+		/* ---- progress hairline + waypoints fill ---- */
 		var progressFill = document.querySelector('[data-progress]');
-		if (progressFill) {
-			ScrollTrigger.create({
-				start: 0,
-				end: function () {
-					return ScrollTrigger.maxScroll(window);
-				},
-				onUpdate: function (self) {
+		var waypointFill = document.querySelector('[data-waypoint-fill]');
+		ScrollTrigger.create({
+			start: 0,
+			end: function () {
+				return ScrollTrigger.maxScroll(window);
+			},
+			onUpdate: function (self) {
+				if (progressFill) {
 					progressFill.style.transform = 'scaleX(' + self.progress + ')';
 				}
+				if (waypointFill) {
+					waypointFill.style.transform = 'scaleY(' + self.progress + ')';
+				}
+			}
+		});
+
+		/* ---- waypoint current number ---- */
+		var wpNow = document.querySelector('[data-waypoint-now]');
+		if (wpNow) {
+			document.querySelectorAll('[data-section]').forEach(function (sec) {
+				ScrollTrigger.create({
+					trigger: sec,
+					start: 'top 55%',
+					end: 'bottom 55%',
+					onToggle: function (self) {
+						if (self.isActive) {
+							wpNow.textContent = sec.getAttribute('data-section');
+						}
+					}
+				});
 			});
 		}
 
-		/* ---- nav hide / reveal ---- */
+		/* ---- nav: solid after hero, hide on scroll down ---- */
 		var nav = document.querySelector('[data-nav]');
 		if (nav) {
 			var lastY = 0;
@@ -209,9 +280,10 @@
 				end: 'max',
 				onUpdate: function (self) {
 					var y = self.scroll();
-					if (y > 140 && y > lastY + 4) {
+					nav.classList.toggle('nav--solid', y > 40);
+					if (y > 160 && y > lastY + 4) {
 						nav.classList.add('nav--hidden');
-					} else if (y < lastY - 4 || y <= 140) {
+					} else if (y < lastY - 4 || y <= 160) {
 						nav.classList.remove('nav--hidden');
 					}
 					lastY = y;
@@ -219,21 +291,29 @@
 			});
 		}
 
-		/* ---- split headings ---- */
+		/* ---- the ink inversion at the terms ---- */
+		document.querySelectorAll('[data-invert]').forEach(function (sec) {
+			ScrollTrigger.create({
+				trigger: sec,
+				start: 'top 62%',
+				end: 'bottom 40%',
+				onToggle: function (self) {
+					docEl.classList.toggle('inverted', self.isActive);
+				}
+			});
+		});
+
+		/* ---- hero title ---- */
 		var heroChars = null;
 		var fitTargets = [];
 		document.querySelectorAll('[data-chars]').forEach(function (el) {
-			var chars = splitText(el, 'chars');
+			var chars = splitChars(el);
 			if (el.classList.contains('hero__title')) {
 				heroChars = chars;
 				fitTargets.push(el);
 				fitText(el);
 				gsap.set(chars, { yPercent: 112 });
 				return;
-			}
-			if (el.classList.contains('terms__price')) {
-				fitTargets.push(el);
-				fitText(el);
 			}
 			gsap.set(chars, { yPercent: 112 });
 			ScrollTrigger.create({
@@ -245,14 +325,32 @@
 						yPercent: 0,
 						duration: 1.1,
 						ease: 'power4.out',
-						stagger: 0.03
+						stagger: 0.035
 					});
 				}
 			});
 		});
 
-		/* refit headlines on resize (before the gradient relayout at 150ms)
-		   and once the display font finishes loading */
+		/* ---- masked line reveals for titles ---- */
+		document.querySelectorAll('[data-lines]').forEach(function (el) {
+			var lines = splitLines(el);
+			gsap.set(lines, { yPercent: 115 });
+			ScrollTrigger.create({
+				trigger: el,
+				start: 'top 84%',
+				once: true,
+				onEnter: function () {
+					gsap.to(lines, {
+						yPercent: 0,
+						duration: 1.2,
+						ease: 'power4.out',
+						stagger: 0.09
+					});
+				}
+			});
+		});
+
+		/* refit headlines on resize and once fonts land */
 		var fitTimer;
 		window.addEventListener('resize', function () {
 			clearTimeout(fitTimer);
@@ -263,48 +361,43 @@
 		if (document.fonts && document.fonts.ready) {
 			document.fonts.ready.then(function () {
 				fitTargets.forEach(fitText);
-				window.dispatchEvent(new Event('resize'));
+				buildThread();
 				ScrollTrigger.refresh();
 			});
 		}
 
-		document.querySelectorAll('[data-words]').forEach(function (el) {
-			var words = splitText(el, 'words');
-			gsap.set(words, { yPercent: 112 });
-			ScrollTrigger.create({
-				trigger: el,
-				start: 'top 86%',
-				once: true,
-				onEnter: function () {
-					gsap.to(words, {
-						yPercent: 0,
-						duration: 1,
-						ease: 'power4.out',
-						stagger: 0.06
-					});
-				}
-			});
-		});
-
 		/* ---- generic reveals ---- */
 		document.querySelectorAll('[data-reveal]').forEach(function (el) {
-			var delay =
-				parseFloat(getComputedStyle(el).getPropertyValue('--d')) || 0;
 			gsap.fromTo(
 				el,
-				{ autoAlpha: 0, y: 36 },
+				{ autoAlpha: 0, y: 28 },
 				{
 					autoAlpha: 1,
 					y: 0,
 					duration: 1,
-					delay: delay,
 					ease: 'power3.out',
-					scrollTrigger: { trigger: el, start: 'top 87%', once: true }
+					scrollTrigger: { trigger: el, start: 'top 88%', once: true }
 				}
 			);
 		});
 
-		/* ---- section rules ---- */
+		/* ---- ledger rows wipe in ---- */
+		document.querySelectorAll('[data-ledger]').forEach(function (row, i) {
+			gsap.fromTo(
+				row,
+				{ autoAlpha: 0, x: -24 },
+				{
+					autoAlpha: 1,
+					x: 0,
+					duration: 0.9,
+					delay: (i % 5) * 0.06,
+					ease: 'power3.out',
+					scrollTrigger: { trigger: row, start: 'top 90%', once: true }
+				}
+			);
+		});
+
+		/* ---- section rules draw ---- */
 		document.querySelectorAll('.section__rule').forEach(function (el) {
 			gsap.to(el, {
 				scaleX: 1,
@@ -318,10 +411,10 @@
 		document.querySelectorAll('[data-scramble]').forEach(function (el) {
 			ScrollTrigger.create({
 				trigger: el,
-				start: 'top 90%',
+				start: 'top 92%',
 				once: true,
 				onEnter: function () {
-					scramble(el, 950);
+					scramble(el, 900);
 				}
 			});
 		});
@@ -349,87 +442,120 @@
 			});
 		});
 
-		/* ---- hero parallax ---- */
-		var heroInner = document.querySelector('.hero__inner');
-		if (heroInner) {
-			gsap.to(heroInner, {
-				yPercent: -8,
-				autoAlpha: 0.25,
-				ease: 'none',
-				scrollTrigger: {
-					trigger: '.hero',
-					start: 'top top',
-					end: 'bottom 30%',
-					scrub: true
+		/* ---- odometer price ---- */
+		document.querySelectorAll('[data-odometer]').forEach(function (el) {
+			var strips = buildOdometer(el);
+			ScrollTrigger.create({
+				trigger: el,
+				start: 'top 78%',
+				once: true,
+				onEnter: function () {
+					strips.forEach(function (s, i) {
+						gsap.fromTo(
+							s.strip,
+							{ yPercent: 0 },
+							{
+								yPercent: -s.target * 10,
+								duration: 1.7 + i * 0.1,
+								ease: 'power4.inOut'
+							}
+						);
+					});
 				}
 			});
-		}
+		});
 
-		/* ---- marquee (GSAP-driven, reacts to scroll velocity) ---- */
+		/* ---- marquee: loop + velocity skew ---- */
 		var track = document.querySelector('[data-marquee-track]');
 		if (track) {
 			track.style.animation = 'none';
 			var loop = gsap.to(track, {
 				xPercent: -50,
-				duration: 26,
+				duration: 28,
 				ease: 'none',
 				repeat: -1
 			});
+			var skewSetter = gsap.quickTo(track, 'skewX', {
+				duration: 0.5,
+				ease: 'power2.out'
+			});
 			if (lenis) {
 				lenis.on('scroll', function (e) {
-					var ts = 1 + Math.min(Math.abs(e.velocity || 0) / 60, 3);
+					var v = e.velocity || 0;
 					gsap.to(loop, {
-						timeScale: ts,
+						timeScale: 1 + Math.min(Math.abs(v) / 60, 2.6),
 						duration: 0.4,
 						overwrite: true
 					});
+					skewSetter(gsap.utils.clamp(-8, 8, -v * 0.18));
 				});
 			}
 		}
 
-		/* ---- tilt cards + pointer glow ---- */
-		if (finePointer) {
-			document.querySelectorAll('[data-tilt]').forEach(function (card) {
-				var bounds = null;
-				card.addEventListener('mouseenter', function () {
-					bounds = card.getBoundingClientRect();
-				});
-				card.addEventListener('mousemove', function (e) {
-					if (!bounds) {
-						return;
-					}
-					var px = (e.clientX - bounds.left) / bounds.width;
-					var py = (e.clientY - bounds.top) / bounds.height;
-					card.style.setProperty('--mx', px * 100 + '%');
-					card.style.setProperty('--my', py * 100 + '%');
-					gsap.to(card, {
-						rotateY: (px - 0.5) * 7,
-						rotateX: (0.5 - py) * 7,
-						transformPerspective: 700,
-						duration: 0.45,
-						ease: 'power2.out'
-					});
-				});
-				card.addEventListener('mouseleave', function () {
-					gsap.to(card, {
-						rotateX: 0,
-						rotateY: 0,
-						duration: 0.7,
-						ease: 'elastic.out(1, 0.55)'
-					});
-				});
-			});
+		/* ---- the thread: a line drawing itself down the page ---- */
+		var threadSvg = document.querySelector('[data-thread]');
+		var threadPath = document.querySelector('[data-thread-path]');
+		var threadTrigger = null;
 
-			/* ---- magnetic buttons ---- */
+		function buildThread() {
+			if (!threadSvg || !threadPath) {
+				return;
+			}
+			if (window.innerWidth < 1024) {
+				return;
+			}
+			var H = Math.max(
+				document.documentElement.scrollHeight,
+				document.body.scrollHeight
+			);
+			threadSvg.setAttribute('viewBox', '0 0 120 ' + H);
+			threadSvg.style.height = H + 'px';
+			var d = 'M 60 0';
+			var y = 0;
+			var px = 60;
+			var left = true;
+			var seg = 300;
+			while (y + seg < H - 160) {
+				var nx = left ? 16 : 104;
+				var ny = y + seg;
+				d += ' C ' + px + ' ' + (y + seg * 0.5) + ', ' + nx + ' ' + (ny - seg * 0.5) + ', ' + nx + ' ' + ny;
+				px = nx;
+				y = ny;
+				left = !left;
+			}
+			d += ' C ' + px + ' ' + (y + 90) + ', 60 ' + (H - 70) + ', 60 ' + (H - 8);
+			threadPath.setAttribute('d', d);
+			var len = threadPath.getTotalLength();
+			threadPath.style.strokeDasharray = len;
+			threadPath.style.strokeDashoffset = len;
+			if (threadTrigger) {
+				threadTrigger.kill();
+			}
+			threadTrigger = ScrollTrigger.create({
+				start: 0,
+				end: 'max',
+				onUpdate: function (self) {
+					threadPath.style.strokeDashoffset =
+						len * (1 - self.progress);
+				}
+			});
+		}
+		buildThread();
+		var threadTimer;
+		window.addEventListener('resize', function () {
+			clearTimeout(threadTimer);
+			threadTimer = setTimeout(buildThread, 200);
+		});
+
+		/* ---- magnetic + cursor ---- */
+		if (finePointer) {
 			document.querySelectorAll('[data-magnetic]').forEach(function (el) {
-				var strength = 22;
+				var strength = 18;
 				el.addEventListener('mousemove', function (e) {
 					var b = el.getBoundingClientRect();
-					var relX = e.clientX - b.left - b.width / 2;
-					var relY = e.clientY - b.top - b.height / 2;
 					gsap.to(el, {
-						x: (relX / b.width) * strength,
-						y: (relY / b.height) * strength,
+						x: ((e.clientX - b.left - b.width / 2) / b.width) * strength,
+						y: ((e.clientY - b.top - b.height / 2) / b.height) * strength,
 						duration: 0.4,
 						ease: 'power2.out'
 					});
@@ -438,33 +564,20 @@
 					gsap.to(el, {
 						x: 0,
 						y: 0,
-						duration: 0.8,
-						ease: 'elastic.out(1, 0.4)'
+						duration: 0.7,
+						ease: 'elastic.out(1, 0.45)'
 					});
 				});
 			});
 
-			/* ---- custom cursor ---- */
 			var dot = document.querySelector('[data-cursor-dot]');
 			var ring = document.querySelector('[data-cursor-ring]');
 			var cursorWrap = document.querySelector('.cursor');
 			if (dot && ring && cursorWrap) {
-				var ringX = gsap.quickTo(ring, 'x', {
-					duration: 0.45,
-					ease: 'power3.out'
-				});
-				var ringY = gsap.quickTo(ring, 'y', {
-					duration: 0.45,
-					ease: 'power3.out'
-				});
-				var dotX = gsap.quickTo(dot, 'x', {
-					duration: 0.08,
-					ease: 'power2.out'
-				});
-				var dotY = gsap.quickTo(dot, 'y', {
-					duration: 0.08,
-					ease: 'power2.out'
-				});
+				var ringX = gsap.quickTo(ring, 'x', { duration: 0.4, ease: 'power3.out' });
+				var ringY = gsap.quickTo(ring, 'y', { duration: 0.4, ease: 'power3.out' });
+				var dotX = gsap.quickTo(dot, 'x', { duration: 0.07, ease: 'power2.out' });
+				var dotY = gsap.quickTo(dot, 'y', { duration: 0.07, ease: 'power2.out' });
 				window.addEventListener('mousemove', function (e) {
 					dotX(e.clientX);
 					dotY(e.clientY);
@@ -472,7 +585,7 @@
 					ringY(e.clientY);
 				});
 				document
-					.querySelectorAll('a, button, [data-tilt], input, textarea')
+					.querySelectorAll('a, button, input, textarea, .ledger__row')
 					.forEach(function (el) {
 						el.addEventListener('mouseenter', function () {
 							cursorWrap.classList.add('cursor--active');
@@ -484,7 +597,7 @@
 			}
 		}
 
-		/* ---- offer form: pending state ---- */
+		/* ---- offer form pending state ---- */
 		var offerForm = document.querySelector('.offer-form');
 		if (offerForm) {
 			offerForm.addEventListener('submit', function () {
@@ -499,7 +612,7 @@
 			});
 		}
 
-		/* ---- intro: preloader → hero ---- */
+		/* ---- intro: curtain ---- */
 		var preloader = document.getElementById('preloader');
 		var seen = false;
 		try {
@@ -512,9 +625,9 @@
 			var tl = gsap.timeline();
 			if (nav) {
 				tl.from(nav, {
-					yPercent: -160,
+					y: -16,
 					autoAlpha: 0,
-					duration: 1,
+					duration: 0.9,
 					ease: 'power3.out'
 				});
 			}
@@ -523,11 +636,11 @@
 					heroChars,
 					{
 						yPercent: 0,
-						duration: 1.2,
+						duration: 1.25,
 						ease: 'power4.out',
-						stagger: 0.035
+						stagger: 0.04
 					},
-					0.15
+					0.1
 				);
 			}
 			return tl;
@@ -536,12 +649,12 @@
 		if (preloader && !seen) {
 			try {
 				sessionStorage.setItem('epi_seen', '1');
-			} catch (err) {
-				/* private mode — fine */
-			}
-			var bar = preloader.querySelector('[data-preload-bar]');
+			} catch (err) { /* private mode */ }
 			var count = preloader.querySelector('[data-preload-count]');
 			var word = preloader.querySelector('[data-preload-word]');
+			var center = preloader.querySelector('.preloader__center');
+			var top = preloader.querySelector('[data-curtain-top]');
+			var bottom = preloader.querySelector('[data-curtain-bottom]');
 			var progress = { v: 0 };
 
 			var preTl = gsap.timeline({
@@ -553,8 +666,8 @@
 			if (word) {
 				preTl.from(word, {
 					autoAlpha: 0,
-					y: 24,
-					duration: 0.7,
+					letterSpacing: '0.5em',
+					duration: 0.9,
 					ease: 'power3.out'
 				});
 			}
@@ -562,28 +675,19 @@
 				progress,
 				{
 					v: 100,
-					duration: 1.5,
+					duration: 1.3,
 					ease: 'power2.inOut',
 					onUpdate: function () {
-						if (bar) {
-							bar.style.transform =
-								'scaleX(' + progress.v / 100 + ')';
-						}
 						if (count) {
-							count.textContent =
-								(progress.v < 10 ? '0' : '') +
-								Math.round(progress.v);
+							count.textContent = Math.round(progress.v);
 						}
 					}
 				},
-				0.2
+				0.15
 			);
-			preTl.to(preloader, {
-				yPercent: -100,
-				duration: 0.9,
-				ease: 'power4.inOut',
-				delay: 0.15
-			});
+			preTl.to(center, { autoAlpha: 0, duration: 0.35, ease: 'power2.in' });
+			preTl.to(top, { yPercent: -101, duration: 0.85, ease: 'power4.inOut' }, '<0.1');
+			preTl.to(bottom, { yPercent: 101, duration: 0.85, ease: 'power4.inOut' }, '<');
 		} else {
 			if (preloader) {
 				preloader.style.display = 'none';
