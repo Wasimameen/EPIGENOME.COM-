@@ -26,9 +26,9 @@ function epigenome_customize_register( $wp_customize ) {
 
 	$fields = array(
 		'domain_name'   => array( 'Domain name', 'text', 'EPIGENOME.COM' ),
-		'price'         => array( 'Asking price (shown everywhere)', 'text', '$295,000' ),
+		'price'         => array( 'Asking price (shown everywhere)', 'text', '$14,888' ),
 		'lto_enabled'   => array( 'Show lease-to-own monthly terms', 'checkbox', '' ),
-		'lto_monthly'   => array( 'Lease-to-own monthly figure', 'text', '$4,900 / month' ),
+		'lto_monthly'   => array( 'Lease-to-own monthly figure', 'text', '$1,240 / month' ),
 		'contact_email' => array( 'Contact email (offers are sent here)', 'email', get_option( 'admin_email' ) ),
 		'contact_phone' => array( 'Contact phone (optional)', 'text', '' ),
 		'buy_link'      => array( 'Buy Now link (Escrow.com / Afternic / Dan). Empty = email.', 'url', '' ),

@@ -74,9 +74,9 @@ add_filter( 'wp_resource_hints', 'epigenome_resource_hints', 10, 2 );
 function epigenome_opt( $key ) {
 	$defaults = array(
 		'domain_name'   => 'EPIGENOME.COM',
-		'price'         => '$295,000',
+		'price'         => '$14,888',
 		'lto_enabled'   => '',
-		'lto_monthly'   => '$4,900 / month',
+		'lto_monthly'   => '$1,240 / month',
 		'contact_email' => get_option( 'admin_email' ),
 		'contact_phone' => '',
 		'buy_link'      => '',

@@ -20,7 +20,7 @@ A cinematic, fully animated one-page landing theme built to sell EPIGENOME.COM.
 Everything sale-related is under Appearance → Customize → Domain Listing:
 
 * Domain name           — default EPIGENOME.COM
-* Asking price          — default $295,000 (shown in nav, hero, comps verdict, terms)
+* Asking price          — default $14,888 (shown in nav, hero, comps verdict, terms)
 * Lease-to-own          — optional checkbox + monthly figure; when enabled the
                           Terms section shows the dual lump-sum / monthly frame
 * Contact email         — where the offer form delivers (defaults to admin email)
