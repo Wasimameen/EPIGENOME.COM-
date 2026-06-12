@@ -15,6 +15,8 @@ if ( strpos( $uri, '/theme/' ) === 0 ) {
 			'css'  => 'text/css',
 			'js'   => 'application/javascript',
 			'png'  => 'image/png',
+			'jpg'  => 'image/jpeg',
+			'jpeg' => 'image/jpeg',
 			'svg'  => 'image/svg+xml',
 			'woff2' => 'font/woff2',
 		);

@@ -60,6 +60,13 @@ avenue traffic and blinking rooftop beacons, then climbs to the crown
 of the tallest tower, where a holographic DNA helix rotates around a
 gold diamond beside the asking price. Mouse movement adds parallax.
 
+Photographic realism: the towers nearest the flight path and a share
+of the full skyline are textured with real Manhattan night photographs,
+the horizon is a real graded panorama of Lower Manhattan wrapped
+around the scene, and glass/street reflections come from a real
+night-city HDRI environment. Photo textures load progressively and
+fall back to the procedural facades if missing.
+
 Cinematic realism stack: per-floor window lighting baked into the
 facades (lit floors in runs, dark after-hours floors, glowing lobbies,
 dark mechanical tops), stepped setbacks and rooftop penthouses,
@@ -89,3 +96,11 @@ mobile-grade scene on any device.
 * Three.js — threejs.org (MIT)
 * Lenis smooth scroll — MIT, darkroom.engineering
 * Fonts — Cinzel, Cormorant Garamond, Inter, IBM Plex Mono (OFL, self-hosted)
+* Photo assets (assets/img, graded/cropped derivatives):
+  - "New York Midtown Skyline at night - Jan 2006" by Diliff,
+    CC BY-SA 3.0 (facade textures) — commons.wikimedia.org
+  - "Lower Manhattan from Jersey City November 2014 panorama 3" by
+    King of Hearts, CC BY-SA 3.0 (horizon backdrop) — commons.wikimedia.org
+  - "Shanghai Bund" HDRI tonemap — Poly Haven, CC0 (environment
+    reflections) — polyhaven.com
+  These derivative images remain under their respective licenses.

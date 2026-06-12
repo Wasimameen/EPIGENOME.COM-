@@ -40,6 +40,22 @@
 	var TEAL = 0x38e8d2;
 	var GOLD = 0xe3c688;
 
+	/* photographic assets shipped with the theme */
+	var ASSET_BASE = (function () {
+		if (window.EPI_ASSETS) { return window.EPI_ASSETS; }
+		var s = document.currentScript && document.currentScript.src;
+		return s ? s.replace(/\/js\/scene\.js[^]*$/, '/img') : '';
+	})();
+	var texLoader = new THREE.TextureLoader();
+	function loadPhoto(file, onload) {
+		if (!ASSET_BASE) { return; }
+		texLoader.load(ASSET_BASE + '/' + file, function (tex) {
+			tex.encoding = THREE.sRGBEncoding;
+			tex.anisotropy = 8;
+			onload(tex);
+		});
+	}
+
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowQuality ? 1.5 : 1.75));
 	renderer.toneMapping = THREE.ACESFilmicToneMapping;
 	renderer.toneMappingExposure = 1.12;
@@ -123,6 +139,30 @@
 			scene.environment = pmrem.fromCubemap(cube).texture;
 			pmrem.dispose();
 		} catch (e) { /* IBL is optional polish */ }
+		/* upgrade to a real night-city environment when the photo lands */
+		loadPhoto('city-env.jpg', function (tex) {
+			try {
+				tex.mapping = THREE.EquirectangularReflectionMapping;
+				var pm = new THREE.PMREMGenerator(renderer);
+				scene.environment = pm.fromEquirectangular(tex).texture;
+				pm.dispose();
+			} catch (e) { /* keep gradient env */ }
+		});
+	})();
+
+	/* ---------------- photographic skyline backdrop ring ------------------ */
+	(function backdrop() {
+		var ring = new THREE.Mesh(
+			new THREE.CylinderGeometry(1000, 1000, 330, 64, 1, true),
+			new THREE.MeshBasicMaterial({ color: 0x0e1626, side: THREE.BackSide, fog: false })
+		);
+		ring.position.set(0, 118, -350);
+		scene.add(ring);
+		loadPhoto('city-backdrop.jpg', function (tex) {
+			tex.wrapS = THREE.MirroredRepeatWrapping;
+			tex.repeat.set(2, 1);
+			ring.material = new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide, fog: false });
+		});
 	})();
 
 	/* ---------------- lights ---------------- */
@@ -210,6 +250,29 @@
 		facadeMaterial(makeFacade({ floorRatio: 0.7, warmth: 0.75, body: '#0b1322' }), false),
 		facadeMaterial(makeFacade({ floorRatio: 0.5, warmth: 0.25, body: '#0d1526' }), true)
 	];
+
+	/* real Manhattan facades (photo-textured); they start procedural and
+	   swap to the photograph the moment it loads */
+	function photoFacadeMaterial(file, repX, repY, glass) {
+		var mat = facadeMaterial(makeFacade({ floorRatio: 0.5, warmth: 0.5 }), glass);
+		loadPhoto(file, function (tex) {
+			tex.wrapS = THREE.RepeatWrapping;
+			tex.wrapT = THREE.RepeatWrapping;
+			tex.repeat.set(repX, repY);
+			mat.map = tex;
+			mat.emissiveMap = tex;
+			mat.emissiveIntensity = 0.78;
+			mat.needsUpdate = true;
+		});
+		return mat;
+	}
+	var photoMats = [
+		photoFacadeMaterial('facade-1.jpg', 1.4, 1.9, false),
+		photoFacadeMaterial('facade-2.jpg', 1.2, 1.6, false),
+		photoFacadeMaterial('facade-3.jpg', 1.5, 2.1, false),
+		photoFacadeMaterial('facade-4.jpg', 1.3, 1.7, true)
+	];
+	facadeMats = facadeMats.concat(photoMats);
 
 	/* ---------------- wet streets ---------------- */
 	var groundTex = (function () {
@@ -425,7 +488,7 @@
 			if (!corridorClear(x, z, 14)) { x += side * 10; }
 			var w = 14 + Math.random() * 5;
 			var h = Math.max(p.y + 38 + Math.random() * 30, 84);
-			var tower = new THREE.Mesh(boxGeo.clone(), facadeMats[3]);
+			var tower = new THREE.Mesh(boxGeo.clone(), photoMats[i % photoMats.length]);
 			tower.position.set(x, 0, z);
 			tower.scale.set(w, h, w);
 			scene.add(tower);
@@ -591,7 +654,7 @@
 	var diamond;
 	(function crown() {
 		var h = 160;
-		var tower = new THREE.Mesh(boxGeo.clone(), facadeMats[3]);
+		var tower = new THREE.Mesh(boxGeo.clone(), photoMats[0]);
 		tower.position.set(crownBase.x, 0, crownBase.z);
 		tower.scale.set(26, h, 26);
 		scene.add(tower);
