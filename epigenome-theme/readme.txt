@@ -55,6 +55,11 @@ The page floats over a scroll-driven Three.js journey: across a green
 marble plain, through a monumental gateway, down a colonnade, beneath a
 floating DNA-helix sculpture, through a gold ring, and up the grand
 stairs to a temple where a gold diamond burns beside the asking price.
+A detailed New York-style skyline flanks the whole route — stepped
+art-deco towers with pier-and-spandrel facades, cornices, gold crowns,
+rooftop water towers and blinking beacons (plus an Empire State and a
+Chrysler silhouette). Towers rise from the ground as the camera
+approaches them.
 The camera position is tied to scroll progress; mouse movement adds a
 gentle parallax.
 

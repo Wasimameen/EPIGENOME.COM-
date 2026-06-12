@@ -251,6 +251,285 @@
 		peakGlow.position.set(0, py + 6.4, -294);
 	})();
 
+	/* ---- New York skyline — detailed art-deco towers flanking the route ----
+	   stepped setbacks, cornices, pier-and-spandrel facades, gold crowns,
+	   rooftop water towers; each tower rises as the camera approaches */
+	var towers = [];
+	var beacons = [];
+
+	/* pier-and-spandrel facade: vertical ivory ribs, recessed window
+	   columns, a share of warm lit panes — three variants for variety */
+	function makeFacadeTexture() {
+		var c = document.createElement('canvas');
+		c.width = 128;
+		c.height = 256;
+		var x = c.getContext('2d');
+		x.fillStyle = '#e9e2cf';
+		x.fillRect(0, 0, 128, 256);
+		var cols = 7;
+		var rows = 16;
+		var cw = 128 / cols;
+		var ch = 256 / rows;
+		/* recessed window strips between piers */
+		for (var cc = 0; cc < cols; cc++) {
+			x.fillStyle = 'rgba(26, 40, 31, 0.18)';
+			x.fillRect(cc * cw + cw * 0.18, 0, cw * 0.64, 256);
+		}
+		for (var r = 0; r < rows; r++) {
+			for (var c2 = 0; c2 < cols; c2++) {
+				var roll = Math.random();
+				var litGold = roll < 0.12;
+				var litWarm = !litGold && roll < 0.2;
+				x.fillStyle = litGold
+					? 'rgba(218, 173, 86, 0.95)'
+					: litWarm
+						? 'rgba(214, 196, 150, 0.85)'
+						: 'rgba(24, 38, 29, ' + (0.5 + Math.random() * 0.25) + ')';
+				x.fillRect(c2 * cw + cw * 0.24, r * ch + ch * 0.2, cw * 0.52, ch * 0.52);
+			}
+			/* spandrel shadow line under each window row */
+			x.fillStyle = 'rgba(26, 40, 31, 0.12)';
+			x.fillRect(0, r * ch + ch * 0.78, 128, 2);
+		}
+		/* pier highlights */
+		for (var p = 0; p <= cols; p++) {
+			x.fillStyle = 'rgba(255, 252, 240, 0.5)';
+			x.fillRect(p * cw - 1, 0, 2, 256);
+		}
+		var tx = new THREE.CanvasTexture(c);
+		tx.wrapS = THREE.RepeatWrapping;
+		tx.wrapT = THREE.RepeatWrapping;
+		tx.anisotropy = 4;
+		return tx;
+	}
+	var facades = [makeFacadeTexture(), makeFacadeTexture(), makeFacadeTexture()];
+
+	function towerMaterial(wSeg, hSeg) {
+		var tex = facades[(Math.random() * facades.length) | 0].clone();
+		tex.needsUpdate = true;
+		tex.repeat.set(Math.max(1, Math.round(wSeg)), Math.max(1, Math.round(hSeg)));
+		return new THREE.MeshStandardMaterial({ map: tex, roughness: 0.8, metalness: 0.04 });
+	}
+
+	var mBeacon = new THREE.MeshStandardMaterial({
+		color: 0xd8ab55,
+		emissive: 0xd8ab55,
+		emissiveIntensity: 1
+	});
+
+	function registerTower(group, z, appear) {
+		group.scale.y = 0.001;
+		world.add(group);
+		towers.push({ g: group, z: z, appear: appear || 70 });
+	}
+
+	function addBeacon(g, y, size) {
+		var b = new THREE.Mesh(new THREE.SphereGeometry(size || 0.16, 8, 8), mBeacon.clone());
+		b.position.y = y;
+		g.add(b);
+		beacons.push(b);
+		return b;
+	}
+
+	/* tiny NYC rooftop water tower: tank, conical lid, stilts */
+	function addWaterTower(g, x, y, z) {
+		var tank = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.62, 1.1, 9), mIvoryDim);
+		tank.position.set(x, y + 1.0, z);
+		g.add(tank);
+		var lid = new THREE.Mesh(new THREE.ConeGeometry(0.68, 0.55, 9), mGold);
+		lid.position.set(x, y + 1.83, z);
+		g.add(lid);
+		var legs = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.58, 0.5, 6, 1, true), mIvoryDim);
+		legs.position.set(x, y + 0.25, z);
+		g.add(legs);
+	}
+
+	/* a cornice lip + optional gold trim line at a setback */
+	function addCornice(g, w, y, gold) {
+		var lip = new THREE.Mesh(new THREE.BoxGeometry(w + 0.55, 0.34, w + 0.55), mIvoryDim);
+		lip.position.y = y;
+		g.add(lip);
+		if (gold) {
+			var trim = new THREE.Mesh(new THREE.BoxGeometry(w + 0.62, 0.09, w + 0.62), mGold);
+			trim.position.y = y - 0.22;
+			g.add(trim);
+		}
+	}
+
+	/* generic stepped-setback tower (the Manhattan staple) */
+	function buildTower(xPos, zPos, baseW, totalH, detail) {
+		var g = new THREE.Group();
+		/* street podium with entrance */
+		var podW = baseW * 1.25;
+		var pod = new THREE.Mesh(new THREE.BoxGeometry(podW, 2.2, podW), towerMaterial(podW / 2.2, 1));
+		pod.position.y = 1.1;
+		g.add(pod);
+		addCornice(g, podW, 2.35, detail > 0.4);
+		var door = new THREE.Mesh(new THREE.BoxGeometry(baseW * 0.32, 1.5, 0.2), mGold);
+		door.position.set(0, 0.75, podW / 2 + 0.02);
+		g.add(door);
+
+		var levels = 2 + ((Math.random() * 2) | 0);
+		var w = baseW;
+		var y = 2.2;
+		var rem = totalH - 2.2;
+		for (var i = 0; i < levels; i++) {
+			var lh = i === levels - 1 ? rem : rem * (0.42 + Math.random() * 0.18);
+			var mesh = new THREE.Mesh(
+				new THREE.BoxGeometry(w, lh, w),
+				towerMaterial(w / 2.2, lh / 2.4)
+			);
+			mesh.position.y = y + lh / 2;
+			g.add(mesh);
+			y += lh;
+			rem -= lh;
+			addCornice(g, w, y + 0.1, i === 0 && detail > 0.35);
+			w *= 0.66 + Math.random() * 0.1;
+		}
+
+		/* crown: mast / gold ziggurat / pyramid cap */
+		var crownRoll = Math.random();
+		if (crownRoll < 0.38) {
+			var spire = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.16, totalH * 0.22, 6), mGold);
+			spire.position.y = y + totalH * 0.11;
+			g.add(spire);
+			addBeacon(g, y + totalH * 0.22 + 0.2);
+		} else if (crownRoll < 0.66) {
+			var zw = w * 1.15;
+			for (var zi = 0; zi < 3; zi++) {
+				var zig = new THREE.Mesh(new THREE.BoxGeometry(zw, 0.6, zw), zi === 2 ? mGold : mIvory);
+				zig.position.y = y + 0.3 + zi * 0.6;
+				g.add(zig);
+				zw *= 0.62;
+			}
+		} else {
+			var cap = new THREE.Mesh(new THREE.ConeGeometry(w * 0.78, w * 0.9, 4), detail > 0.5 ? mGold : mIvoryDim);
+			cap.rotation.y = Math.PI / 4;
+			cap.position.y = y + w * 0.45;
+			g.add(cap);
+		}
+
+		/* rooftop water tower on the first setback */
+		if (detail > 0.45 && levels > 1) {
+			addWaterTower(g, baseW * 0.28, 2.2 + (totalH - 2.2) * 0.46, -baseW * 0.22);
+		}
+
+		g.position.set(xPos, 0, zPos);
+		registerTower(g, zPos);
+		return g;
+	}
+
+	/* Empire State silhouette — five setbacks, cornices, mast, antenna */
+	function buildEmpire(xPos, zPos) {
+		var g = new THREE.Group();
+		var widths = [9.4, 7.6, 6.1, 4.7, 3.3];
+		var heights = [10, 9, 9, 8, 6];
+		var y = 0;
+		for (var i = 0; i < widths.length; i++) {
+			var mesh = new THREE.Mesh(
+				new THREE.BoxGeometry(widths[i], heights[i], widths[i]),
+				towerMaterial(widths[i] / 2.2, heights[i] / 2.4)
+			);
+			mesh.position.y = y + heights[i] / 2;
+			g.add(mesh);
+			y += heights[i];
+			addCornice(g, widths[i], y + 0.1, i < 2);
+		}
+		var mast = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.95, 3.4, 10), mIvoryDim);
+		mast.position.y = y + 1.7;
+		g.add(mast);
+		var antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 7, 6), mGold);
+		antenna.position.y = y + 3.4 + 3.5;
+		g.add(antenna);
+		addBeacon(g, y + 3.4 + 7.2, 0.2);
+		addWaterTower(g, 2.6, 19, 2.4);
+		g.position.set(xPos, 0, zPos);
+		registerTower(g, zPos, 90);
+		return g;
+	}
+
+	/* Chrysler silhouette — setback shaft, radiant gold crown, needle */
+	function buildChrysler(xPos, zPos) {
+		var g = new THREE.Group();
+		var shaftW = [7.4, 6.2, 5.2];
+		var shaftH = [12, 9, 7];
+		var y = 0;
+		for (var i = 0; i < shaftW.length; i++) {
+			var level = new THREE.Mesh(
+				new THREE.BoxGeometry(shaftW[i], shaftH[i], shaftW[i]),
+				towerMaterial(shaftW[i] / 2.2, shaftH[i] / 2.4)
+			);
+			level.position.y = y + shaftH[i] / 2;
+			g.add(level);
+			y += shaftH[i];
+			addCornice(g, shaftW[i], y + 0.1, i === 0);
+		}
+		/* radiant tiered crown */
+		var r = 4.4;
+		for (var t = 0; t < 6; t++) {
+			var crown = new THREE.Mesh(new THREE.ConeGeometry(r, 1.9, 9), t % 2 === 0 ? mGold : mIvory);
+			crown.position.y = y + 0.95;
+			g.add(crown);
+			y += 1.35;
+			r *= 0.7;
+		}
+		var needle = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.12, 5.5, 6), mGold);
+		needle.position.y = y + 2.4;
+		g.add(needle);
+		addBeacon(g, y + 5.0, 0.14);
+		g.position.set(xPos, 0, zPos);
+		registerTower(g, zPos, 90);
+		return g;
+	}
+
+	/* district layout — clear of the processional corridor (|x| ≥ 19) */
+	(function buildSkyline() {
+		var rnd = function (a, b) { return a + Math.random() * (b - a); };
+		var nPerSide = isMobile ? 9 : 20;
+		for (var s = -1; s <= 1; s += 2) {
+			for (var i = 0; i < nPerSide; i++) {
+				var z = -24 - i * (300 / nPerSide) - rnd(0, 8);
+				/* keep the two icon plots free */
+				if (s === -1 && z < -136 && z > -168) { continue; }
+				if (s === 1 && z < -186 && z > -218) { continue; }
+				var x = s * rnd(20, 48);
+				var h = rnd(13, 34) + (z < -120 && z > -240 ? 8 : 0);
+				buildTower(x, z, rnd(4.5, 8.5), h, Math.random());
+			}
+		}
+		buildEmpire(-27, -152);
+		buildChrysler(26, -202);
+		/* distant backdrop slabs for skyline depth */
+		var nBack = isMobile ? 6 : 12;
+		for (var b = 0; b < nBack; b++) {
+			var bs = b % 2 === 0 ? -1 : 1;
+			var bz = -40 - b * (280 / nBack);
+			var bx = bs * rnd(54, 80);
+			var bw = rnd(8, 14);
+			var bh = rnd(24, 48);
+			var bg = new THREE.Group();
+			var slab = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bw), mIvoryDim);
+			slab.position.y = bh / 2;
+			bg.add(slab);
+			var slabCap = new THREE.Mesh(new THREE.BoxGeometry(bw * 0.62, 1.6, bw * 0.62), mIvory);
+			slabCap.position.y = bh + 0.8;
+			bg.add(slabCap);
+			bg.position.set(bx, 0, 0);
+			bg.position.z = bz;
+			registerTower(bg, bz, 110);
+		}
+	})();
+
+	/* towers grow in as the camera approaches */
+	function updateTowers(camZ) {
+		for (var i = 0; i < towers.length; i++) {
+			var t = towers[i];
+			var f = 1 - Math.min(Math.max((camZ - t.z - t.appear) / 60, 0), 1);
+			f = f * f * (3 - 2 * f); /* smoothstep */
+			t.g.scale.y = Math.max(f, 0.001);
+		}
+	}
+
 	/* ---- dust motes ---- */
 	var dustN = isMobile ? 260 : 700;
 	var dustGeo = new THREE.BufferGeometry();
@@ -375,6 +654,11 @@
 
 		progress += (progressGoal - progress) * Math.min(dt * 5.5, 1);
 		setCamera(progress);
+		updateTowers(camera.position.z);
+		for (var bi = 0; bi < beacons.length; bi++) {
+			beacons[bi].material.emissiveIntensity =
+				0.55 + Math.abs(Math.sin(et * 1.6 + bi * 1.3)) * 0.9;
+		}
 
 		helixGroup.rotation.z += dt * 0.25;
 		ring.rotation.z += dt * 0.2;
@@ -392,6 +676,7 @@
 
 	function renderOnce() {
 		setCamera(0.08);
+		updateTowers(camera.position.z);
 		renderer.render(scene, camera);
 	}
 
