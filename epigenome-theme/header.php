@@ -61,6 +61,15 @@
 	<span class="waypoints__total">07</span>
 </aside>
 
+<canvas class="aurora-bg" data-aurora aria-hidden="true"></canvas>
+<canvas class="contrail" data-contrail aria-hidden="true"></canvas>
+<canvas class="sparks" data-sparks aria-hidden="true"></canvas>
+
+<div class="flyby" data-flyby aria-hidden="true">
+	<img class="flyby__plane" src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/plane-sprite.png' ); ?>" alt="">
+	<div class="flyby__streaks"></div>
+</div>
+
 <div class="sky" data-sky aria-hidden="true">
 	<svg class="sky__flight" data-flight preserveAspectRatio="none">
 		<path class="sky__route" data-route d="" fill="none"/>

@@ -74,6 +74,18 @@ copy, a flock of birds, a slowly turning compass rosette and a faint
 DNA helix, all parallaxed at different depths. Everything respects
 prefers-reduced-motion.
 
+== Cinema mode (v5.1) ==
+
+The flight film now also runs full-bleed behind the hero beneath HUD
+corner brackets and a live heading ticker; the hero letters dodge the
+cursor. An aurora of nebula color drifts behind the whole page. The
+comparable-sales ledger pins and rides sideways as you scroll on wide
+screens. The route plane trails a fading silk contrail and glows
+softly; entering key sections sends a large foreground flyby across
+the viewport with light streaks (EPI_FLIGHT.flyby() triggers one on
+demand). When the odometer price lands, the screen shakes, gold and
+teal sparks burst, and the plane pulls a celebratory loop.
+
 == The flight film ==
 
 The "What it becomes" section carries a 7-second looping cinematic

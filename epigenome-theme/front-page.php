@@ -51,6 +51,19 @@ $epigenome_comps = array(
 
 	<!-- ============================== HERO ============================== -->
 	<section class="hero" id="top" data-section="01">
+		<div class="hero__film" aria-hidden="true">
+			<video class="hero__film-video" data-bgfilm autoplay muted loop playsinline preload="auto" poster="<?php echo esc_url( get_template_directory_uri() . '/assets/video/flight-poster.jpg' ); ?>">
+				<source src="<?php echo esc_url( get_template_directory_uri() . '/assets/video/flight.mp4' ); ?>" type="video/mp4">
+			</video>
+			<div class="hero__film-shade"></div>
+		</div>
+		<div class="hero__hud mono" aria-hidden="true">
+			<span class="hero__hud-corner hero__hud-corner--tl"></span>
+			<span class="hero__hud-corner hero__hud-corner--tr"></span>
+			<span class="hero__hud-corner hero__hud-corner--bl"></span>
+			<span class="hero__hud-corner hero__hud-corner--br"></span>
+			<span class="hero__hud-read" data-hud-read>ALT 14888 · HDG 042 · THE CATEGORY NAME</span>
+		</div>
 		<div class="container hero__inner">
 			<p class="kicker mono" data-scramble><?php echo esc_html( __( 'Private listing', 'epigenome' ) . ' · ' . epigenome_opt( 'listing_no' ) ); ?></p>
 
@@ -179,7 +192,8 @@ $epigenome_comps = array(
 				<p><?php esc_html_e( 'Brokers say “category-defining” the way realtors say “charming.” I\'ll use the phrase once, and then show you the math instead. Below are disclosed, lump-sum sales of names that are — or contain — the exact word for their category.', 'epigenome' ); ?></p>
 			</div>
 
-			<div class="ledger" role="list">
+			<div class="comps-pin" data-comps-pin>
+			<div class="ledger comps-rail" role="list" data-comps-rail>
 				<?php foreach ( $epigenome_comps as $i => $comp ) : ?>
 					<div class="ledger__row" role="listitem" data-ledger>
 						<span class="ledger__index mono">0<?php echo esc_html( $i + 1 ); ?></span>
@@ -197,8 +211,9 @@ $epigenome_comps = array(
 					<span class="ledger__price"><?php echo esc_html( $price ); ?></span>
 				</div>
 			</div>
+			</div>
 
-			<p class="comps__footnote mono" data-reveal><?php esc_html_e( 'All comparable figures are public, disclosed lump-sum sales. Do the multiple yourself.', 'epigenome' ); ?></p>
+			<p class="comps__footnote mono" data-reveal><?php esc_html_e( 'All comparable figures are public, disclosed lump-sum sales. Do the multiple yourself. Scroll — the ledger rides sideways.', 'epigenome' ); ?></p>
 		</div>
 	</section>
 
