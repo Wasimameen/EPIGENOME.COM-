@@ -49,19 +49,16 @@ installing any SMTP plugin (e.g. WP Mail SMTP) fixes deliverability. A spam
 honeypot is built in. Every submission also shows the buyer your direct email
 as a fallback.
 
-== The monument scene ==
+== The night-city scene ==
 
-The page floats over a scroll-driven Three.js journey: across a green
-marble plain, through a monumental gateway, down a colonnade, beneath a
-floating DNA-helix sculpture, through a gold ring, and up the grand
-stairs to a temple where a gold diamond burns beside the asking price.
-A detailed New York-style skyline flanks the whole route — stepped
-art-deco towers with pier-and-spandrel facades, cornices, gold crowns,
-rooftop water towers and blinking beacons (plus an Empire State and a
-Chrysler silhouette). Towers rise from the ground as the camera
-approaches them.
-The camera position is tied to scroll progress; mouse movement adds a
-gentle parallax.
+The page floats over a scroll-driven Three.js flight above a futuristic
+Manhattan at night. The hero looks straight down on thousands of
+instanced towers with lit windows; scrolling dives the camera into the
+street canyons, where it swings left and right between buildings —
+banking into every turn — past neon EPIGENOME.COM billboards, animated
+avenue traffic and blinking rooftop beacons, then climbs to the crown
+of the tallest tower, where a holographic DNA helix rotates around a
+gold diamond beside the asking price. Mouse movement adds parallax.
 
 == Performance / motion notes ==
 
