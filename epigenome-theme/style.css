@@ -1,0 +1,17 @@
+/*
+Theme Name: Epigenome — Premium Domain Listing
+Theme URI: https://epigenome.com
+Author: Tom McCarthy
+Author URI: https://epigenome.com
+Description: A cinematic, fully animated one-page landing theme built to sell the domain EPIGENOME.COM. Dark editorial design with a live DNA-helix canvas, smooth scrolling (Lenis), scroll-driven animations (GSAP ScrollTrigger), animated comparable-sales counters, and a built-in offer form. Price, contact details, escrow link and lease-to-own terms are all editable under Appearance → Customize → Domain Listing.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.8
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: epigenome
+Tags: one-column, custom-menu, landing-page
+*/
+
+/* All presentation styles live in assets/css/main.css (enqueued by functions.php). */
