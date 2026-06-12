@@ -361,8 +361,13 @@
 		if (document.fonts && document.fonts.ready) {
 			document.fonts.ready.then(function () {
 				fitTargets.forEach(fitText);
-				buildThread();
 				ScrollTrigger.refresh();
+				if (typeof buildFlight === 'function') {
+					buildFlight();
+				}
+				if (typeof placeDecor === 'function') {
+					placeDecor();
+				}
 			});
 		}
 
@@ -492,59 +497,243 @@
 			}
 		}
 
-		/* ---- the thread: a line drawing itself down the page ---- */
-		var threadSvg = document.querySelector('[data-thread]');
-		var threadPath = document.querySelector('[data-thread-path]');
-		var threadTrigger = null;
+		/* ---- the sky: a detailed aircraft flying the page on scroll ---- */
+		var flightSvg = document.querySelector('[data-flight]');
+		var routePath = document.querySelector('[data-route]');
+		var trailPath = document.querySelector('[data-trail]');
+		var planeEl = document.querySelector('[data-plane]');
+		var planeFlip = document.querySelector('[data-plane-flip]');
+		var planeBob = document.querySelector('[data-plane-bob]');
+		var propEl = document.querySelector('[data-prop]');
+		var speedEl = document.querySelector('[data-speed]');
+		var flightLen = 0;
+		var planeTargetP = 0;
+		var planeP = 0;
+		var planeW = 0;
+		var planeH = 0;
+		var flipped = false;
+		var propTween = null;
 
-		function buildThread() {
-			if (!threadSvg || !threadPath) {
+		function buildFlight() {
+			if (!flightSvg || !routePath || !trailPath || !planeEl) {
 				return;
 			}
-			if (window.innerWidth < 1024) {
-				return;
-			}
+			var W = window.innerWidth;
 			var H = Math.max(
 				document.documentElement.scrollHeight,
 				document.body.scrollHeight
 			);
-			threadSvg.setAttribute('viewBox', '0 0 120 ' + H);
-			threadSvg.style.height = H + 'px';
-			var d = 'M 60 0';
-			var y = 0;
-			var px = 60;
-			var left = true;
-			var seg = 300;
-			while (y + seg < H - 160) {
-				var nx = left ? 16 : 104;
-				var ny = y + seg;
-				d += ' C ' + px + ' ' + (y + seg * 0.5) + ', ' + nx + ' ' + (ny - seg * 0.5) + ', ' + nx + ' ' + ny;
-				px = nx;
-				y = ny;
-				left = !left;
+			var sky = document.querySelector('[data-sky]');
+			if (sky) { sky.style.height = H + 'px'; }
+			flightSvg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+			flightSvg.style.height = H + 'px';
+
+			/* gentle rightward sweeps: the plane exits one side and re-enters
+			   on the other, a little lower — tangents never go steep */
+			var vh = window.innerHeight;
+			var off = 170;
+			var y = vh * 0.8;
+			var drop = vh * 0.92;
+			var d = '';
+			while (y < H - vh * 0.35) {
+				var y2 = Math.min(y + drop * 0.55, H - vh * 0.3);
+				var wave = 30 + Math.random() * 30;
+				d += ' M ' + (-off) + ' ' + y +
+					' C ' + (W * 0.3) + ' ' + (y + wave) +
+					', ' + (W * 0.62) + ' ' + (y2 - wave) +
+					', ' + (W + off) + ' ' + y2;
+				y = y2 + drop * 0.45;
 			}
-			d += ' C ' + px + ' ' + (y + 90) + ', 60 ' + (H - 70) + ', 60 ' + (H - 8);
-			threadPath.setAttribute('d', d);
-			var len = threadPath.getTotalLength();
-			threadPath.style.strokeDasharray = len;
-			threadPath.style.strokeDashoffset = len;
-			if (threadTrigger) {
-				threadTrigger.kill();
+
+			routePath.setAttribute('d', d);
+			trailPath.setAttribute('d', d);
+			flightLen = trailPath.getTotalLength();
+			trailPath.style.strokeDasharray = flightLen;
+			trailPath.style.strokeDashoffset = flightLen * (1 - planeP);
+
+			var rect = planeEl.getBoundingClientRect();
+			planeW = rect.width;
+			planeH = rect.height;
+		}
+
+		function placePlane(p) {
+			if (!flightLen || !planeEl) {
+				return;
 			}
-			threadTrigger = ScrollTrigger.create({
+			var lenAt = flightLen * p;
+			var pt = trailPath.getPointAtLength(lenAt);
+			var ahead = trailPath.getPointAtLength(Math.min(lenAt + 22, flightLen));
+			var behind = trailPath.getPointAtLength(Math.max(lenAt - 22, 0));
+			var dx = ahead.x - behind.x;
+			var dy = ahead.y - behind.y;
+			var deg = (Math.atan2(dy, dx) * 180) / Math.PI;
+			/* hysteresis keeps the flip from fluttering near vertical */
+			var wantFlip = flipped
+				? Math.abs(deg) > 80
+				: Math.abs(deg) > 100;
+			if (wantFlip !== flipped) {
+				flipped = wantFlip;
+				gsap.to(planeFlip, {
+					scaleX: flipped ? -1 : 1,
+					duration: 0.45,
+					ease: 'power2.inOut',
+					transformOrigin: '50% 50%'
+				});
+			}
+			if (flipped) {
+				deg = deg > 0 ? deg - 180 : deg + 180;
+				deg = -deg;
+			}
+			deg = gsap.utils.clamp(-32, 32, deg);
+			gsap.set(planeEl, {
+				x: pt.x - planeW / 2,
+				y: pt.y - planeH / 2,
+				rotation: (flipped ? -deg : deg),
+				transformOrigin: '50% 50%'
+			});
+			trailPath.style.strokeDashoffset = flightLen * (1 - p);
+		}
+
+		if (planeEl && flightSvg) {
+			buildFlight();
+			ScrollTrigger.create({
 				start: 0,
 				end: 'max',
 				onUpdate: function (self) {
-					threadPath.style.strokeDashoffset =
-						len * (1 - self.progress);
+					planeTargetP = self.progress;
 				}
 			});
+			gsap.ticker.add(function () {
+				planeP += (planeTargetP - planeP) * 0.07;
+				placePlane(Math.min(Math.max(planeP, 0), 1));
+			});
+			/* idle bob + the propeller never stops */
+			if (planeBob) {
+				gsap.to(planeBob, {
+					y: 5,
+					duration: 1.8,
+					ease: 'sine.inOut',
+					yoyo: true,
+					repeat: -1
+				});
+			}
+			if (propEl) {
+				propTween = gsap.to(propEl, {
+					rotation: 360,
+					duration: 0.5,
+					ease: 'none',
+					repeat: -1,
+					svgOrigin: '55 -1'
+				});
+			}
+			if (lenis && speedEl) {
+				var speedTo = gsap.quickTo(speedEl, 'opacity', {
+					duration: 0.5,
+					ease: 'power2.out'
+				});
+				lenis.on('scroll', function (e) {
+					var v = Math.abs(e.velocity || 0);
+					speedTo(gsap.utils.clamp(0, 0.7, v / 30));
+					if (propTween) {
+						propTween.timeScale(1 + Math.min(v / 25, 2.5));
+					}
+				});
+			}
 		}
-		buildThread();
-		var threadTimer;
+
+		/* ---- decor: clouds, balloon, birds, rosette, helix ---- */
+		function placeDecor() {
+			var secTop = function (id) {
+				var el = document.getElementById(id);
+				return el ? el.offsetTop : 0;
+			};
+			var secH = function (id) {
+				var el = document.getElementById(id);
+				return el ? el.offsetHeight : 0;
+			};
+			var W = window.innerWidth;
+			var place = function (sel, top, leftPct) {
+				var el = document.querySelector(sel);
+				if (el) {
+					el.style.top = top + 'px';
+					el.style.left = (W * leftPct) / 100 + 'px';
+				}
+				return el;
+			};
+			place('.sky__decor--rosette', window.innerHeight * 0.16, 80);
+			place('.sky__decor--cloud-a', window.innerHeight * 0.34, 6);
+			place('.sky__decor--cloud-b', secTop('comps') - 120, 74);
+			place('.sky__decor--birds', secTop('word') - 160, 16);
+			place('.sky__decor--balloon', secTop('word') + secH('word') * 0.42, 82);
+			place('.sky__decor--helix', secTop('broker') + 60, 7);
+		}
+		placeDecor();
+
+		/* gentle independent motion for each decor piece */
+		gsap.to('[data-rosette-rays]', {
+			rotation: 360,
+			duration: 60,
+			ease: 'none',
+			repeat: -1,
+			svgOrigin: '50 50'
+		});
+		document.querySelectorAll('.sky__decor--cloud').forEach(function (el, i) {
+			gsap.to(el, {
+				xPercent: i % 2 ? -16 : 16,
+				duration: 16 + i * 5,
+				ease: 'sine.inOut',
+				yoyo: true,
+				repeat: -1
+			});
+			gsap.to(el, {
+				y: -70,
+				ease: 'none',
+				scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 1.2 }
+			});
+		});
+		var birds = document.querySelector('.sky__decor--birds');
+		if (birds) {
+			gsap.to(birds, {
+				x: 90,
+				y: -26,
+				duration: 12,
+				ease: 'sine.inOut',
+				yoyo: true,
+				repeat: -1
+			});
+		}
+		var balloon = document.querySelector('.sky__decor--balloon');
+		if (balloon) {
+			gsap.to(balloon, {
+				y: -200,
+				ease: 'none',
+				scrollTrigger: { trigger: balloon, start: 'top bottom', end: 'bottom top', scrub: 1.4 }
+			});
+			gsap.to(balloon, {
+				rotation: 3,
+				duration: 5,
+				ease: 'sine.inOut',
+				yoyo: true,
+				repeat: -1,
+				transformOrigin: '50% 10%'
+			});
+		}
+		var helixDecor = document.querySelector('.sky__decor--helix');
+		if (helixDecor) {
+			gsap.to(helixDecor, {
+				y: -110,
+				ease: 'none',
+				scrollTrigger: { trigger: helixDecor, start: 'top bottom', end: 'bottom top', scrub: 1.2 }
+			});
+		}
+
+		var skyTimer;
 		window.addEventListener('resize', function () {
-			clearTimeout(threadTimer);
-			threadTimer = setTimeout(buildThread, 200);
+			clearTimeout(skyTimer);
+			skyTimer = setTimeout(function () {
+				buildFlight();
+				placeDecor();
+			}, 200);
 		});
 
 		/* ---- magnetic + cursor ---- */

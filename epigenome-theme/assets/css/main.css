@@ -297,24 +297,67 @@ a, button { cursor: pointer; }
 @media (max-width: 64rem) { .waypoints { display: none; } }
 
 /* --------------------------------------------------------------------------
-   The thread — a line that draws itself down the page
+   The sky — an illustrated world living behind the page
    -------------------------------------------------------------------------- */
-.thread {
+.sky {
 	position: absolute;
 	top: 0;
-	right: clamp(1rem, 4vw, 4rem);
-	width: 120px;
+	left: 0;
+	right: 0;
 	z-index: 1;
 	pointer-events: none;
+	overflow: clip;
+	color: var(--fg-soft);
+	transition: color 0.9s var(--ease);
+}
+.sky__flight {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
 	overflow: visible;
 }
-.thread path {
-	stroke: var(--fg);
-	stroke-width: 1;
-	opacity: 0.3;
-	transition: stroke 0.9s;
+.sky__route {
+	stroke: currentColor;
+	stroke-width: 1.2;
+	stroke-dasharray: 3 9;
+	stroke-linecap: round;
+	opacity: 0.4;
 }
-@media (max-width: 64rem) { .thread { display: none; } }
+.sky__trail {
+	stroke: currentColor;
+	stroke-width: 1.2;
+	opacity: 0.55;
+}
+.sky__plane {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: clamp(110px, 12vw, 170px);
+	height: auto;
+	overflow: visible;
+	opacity: 0.85;
+	will-change: transform;
+}
+.sky__gold { fill: var(--gold); stroke: none; }
+
+.sky__decor {
+	position: absolute;
+	opacity: 0.32;
+	will-change: transform;
+}
+.sky__decor--rosette { width: clamp(90px, 9vw, 140px); }
+.sky__decor--cloud { width: clamp(120px, 13vw, 210px); }
+.sky__decor--birds { width: clamp(90px, 9vw, 150px); opacity: 0.45; }
+.sky__decor--balloon { width: clamp(70px, 7vw, 110px); }
+.sky__decor--helix { width: clamp(60px, 6vw, 90px); opacity: 0.22; }
+
+@media (max-width: 48rem) {
+	.sky__plane { opacity: 0.5; }
+	.sky__decor { opacity: 0.22; }
+	.sky__decor--rosette, .sky__decor--helix { display: none; }
+}
+html.reduce-motion .sky { display: none; }
 
 /* --------------------------------------------------------------------------
    Buttons

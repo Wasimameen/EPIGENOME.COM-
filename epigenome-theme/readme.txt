@@ -55,9 +55,17 @@ The design is quiet — warm paper, ink, hairlines — and the motion is
 the craft: a split-curtain intro that plays once per session, masked
 letter and line reveals, a velocity-skewed marquee, comparable sales
 that wipe in as a ledger, an odometer price whose digits roll into
-place, a thin ink thread that draws itself down the page as you
-scroll, a full-page ink inversion while you read the terms, magnetic
-buttons and an ink cursor. Everything respects
+place, a full-page ink inversion while you read the terms, magnetic
+buttons and an ink cursor.
+
+Living in the background is an illustrated sky, drawn in the same ink:
+a detailed vintage aircraft — spinning propeller, spoked wheels, gold
+roundel — flies a dashed route through the entire page as you scroll,
+its trail turning solid behind it, banking with the curves, bobbing
+while you rest, and showing speed lines when you scroll fast. Around
+it: engraved clouds that drift, a hot-air balloon rising past the
+copy, a flock of birds, a slowly turning compass rosette and a faint
+DNA helix, all parallaxed at different depths. Everything respects
 prefers-reduced-motion.
 
 == Performance / motion notes ==

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'EPIGENOME_VERSION', '4.0.0' );
+define( 'EPIGENOME_VERSION', '4.1.0' );
 
 require get_template_directory() . '/inc/customizer.php';
 
