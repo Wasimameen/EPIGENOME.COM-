@@ -60,9 +60,19 @@ avenue traffic and blinking rooftop beacons, then climbs to the crown
 of the tallest tower, where a holographic DNA helix rotates around a
 gold diamond beside the asking price. Mouse movement adds parallax.
 
+Cinematic realism stack: per-floor window lighting baked into the
+facades (lit floors in runs, dark after-hours floors, glowing lobbies,
+dark mechanical tops), stepped setbacks and rooftop penthouses,
+image-based sky reflections on glass towers and rain-slick streets, a
+gradient sky dome, sweeping searchlights, blinking aircraft, and an
+UnrealBloom post-processing pass with gamma-corrected output (desktop
+only). Add ?epi_quality=low to the address to force the lighter
+mobile-grade scene on any device.
+
 == Performance / motion notes ==
 
-* GSAP 3.13, ScrollTrigger, Lenis and Three.js r149 are bundled locally
+* GSAP 3.13, ScrollTrigger, Lenis, Three.js r147 and its bloom
+  post-processing passes are bundled locally
   (no CDN dependency).
 * Fonts are self-hosted in the theme (Cinzel, Cormorant Garamond, Inter,
   IBM Plex Mono) — no Google Fonts request, GDPR-friendly.
