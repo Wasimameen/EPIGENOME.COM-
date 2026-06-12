@@ -55,13 +55,6 @@ $epigenome_comps = array(
 
 	<!-- ============================== HERO ============================== -->
 	<section class="hero" id="top">
-		<canvas class="hero__helix" data-helix aria-hidden="true"></canvas>
-		<div class="hero__aurora" aria-hidden="true">
-			<span class="aurora aurora--teal"></span>
-			<span class="aurora aurora--violet"></span>
-			<span class="aurora aurora--gold"></span>
-		</div>
-
 		<div class="container hero__inner">
 			<p class="kicker mono" data-scramble><?php echo esc_html( __( 'Private listing', 'epigenome' ) . ' · ' . epigenome_opt( 'listing_no' ) ); ?></p>
 
@@ -72,7 +65,7 @@ $epigenome_comps = array(
 			</p>
 
 			<div class="hero__cta" data-reveal>
-				<a class="btn btn--gold" href="<?php echo esc_url( epigenome_buy_url() ); ?>" data-magnetic>
+				<a class="btn btn--ivory" href="<?php echo esc_url( epigenome_buy_url() ); ?>" data-magnetic>
 					<span class="btn__label"><?php echo esc_html__( 'Buy Now', 'epigenome' ) . ' — ' . esc_html( $price ); ?></span>
 					<span class="btn__arrow" aria-hidden="true">&rarr;</span>
 				</a>
@@ -268,7 +261,7 @@ $epigenome_comps = array(
 			</div>
 
 			<div class="terms__cta" data-reveal>
-				<a class="btn btn--gold btn--lg" href="<?php echo esc_url( epigenome_buy_url() ); ?>" data-magnetic>
+				<a class="btn btn--ivory btn--lg" href="<?php echo esc_url( epigenome_buy_url() ); ?>" data-magnetic>
 					<span class="btn__label"><?php echo esc_html__( 'Buy Now', 'epigenome' ) . ' — ' . esc_html( $price ); ?></span>
 					<span class="btn__arrow" aria-hidden="true">&rarr;</span>
 				</a>
@@ -359,7 +352,7 @@ $epigenome_comps = array(
 							<label class="mono" for="offer_message"><?php esc_html_e( 'Message (optional)', 'epigenome' ); ?></label>
 							<textarea id="offer_message" name="offer_message" rows="4"></textarea>
 						</div>
-						<button type="submit" class="btn btn--gold btn--lg offer-form__submit" data-magnetic>
+						<button type="submit" class="btn btn--ivory btn--lg offer-form__submit" data-magnetic>
 							<span class="btn__label"><?php echo esc_html( sprintf( __( 'Send Offer to %s', 'epigenome' ), $first ) ); ?></span>
 							<span class="btn__arrow" aria-hidden="true">&rarr;</span>
 						</button>

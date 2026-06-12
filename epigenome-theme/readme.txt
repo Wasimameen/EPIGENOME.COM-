@@ -49,16 +49,30 @@ installing any SMTP plugin (e.g. WP Mail SMTP) fixes deliverability. A spam
 honeypot is built in. Every submission also shows the buyer your direct email
 as a fallback.
 
+== The monument scene ==
+
+The page floats over a scroll-driven Three.js journey: across a green
+marble plain, through a monumental gateway, down a colonnade, beneath a
+floating DNA-helix sculpture, through a gold ring, and up the grand
+stairs to a temple where a gold diamond burns beside the asking price.
+The camera position is tied to scroll progress; mouse movement adds a
+gentle parallax.
+
 == Performance / motion notes ==
 
-* GSAP 3.13, ScrollTrigger and Lenis are bundled locally (no CDN dependency).
-* Fonts load from Google Fonts (Fraunces, Inter, IBM Plex Mono).
+* GSAP 3.13, ScrollTrigger, Lenis and Three.js r149 are bundled locally
+  (no CDN dependency).
+* Fonts load from Google Fonts (Bodoni Moda, Inter, IBM Plex Mono).
+* The 3D scene drops detail on small screens, pauses in background tabs,
+  and disappears gracefully when WebGL is unavailable (solid green
+  backdrop remains).
 * All animation respects prefers-reduced-motion: users who ask for less
-  motion get an instant, fully readable page with a static helix.
+  motion get an instant, fully readable page with a still scene frame.
 * The intro preloader plays once per browser session.
 
 == Credits ==
 
 * GSAP & ScrollTrigger — gsap.com (standard "no charge" license)
+* Three.js — threejs.org (MIT)
 * Lenis smooth scroll — MIT, darkroom.engineering
 * Fonts — Google Fonts (OFL)

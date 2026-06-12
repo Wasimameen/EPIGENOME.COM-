@@ -1,6 +1,6 @@
 /* ==========================================================================
    EPIGENOME.COM — animation engine
-   Lenis smooth scroll · GSAP ScrollTrigger · DNA helix canvas ·
+   Lenis smooth scroll · GSAP ScrollTrigger · monument-scene scroll driver ·
    scramble labels · counters · magnetic buttons · tilt cards · cursor
    ========================================================================== */
 
@@ -113,9 +113,9 @@
 	}
 
 	var GRADIENT_HERO =
-		'linear-gradient(105deg, #f4f9ff 30%, #34e0c8 50%, #f4f9ff 62%, #a78bfa 88%)';
+		'linear-gradient(110deg, #f6f1e1 32%, #e3c688 50%, #f6f1e1 64%, #d8ba79 88%)';
 	var GRADIENT_GOLD =
-		'linear-gradient(120deg, #f0cd8a, #e2b25f 45%, #fff2d9 60%, #e2b25f 80%)';
+		'linear-gradient(120deg, #e3c688, #c9a45c 45%, #f8ead0 60%, #c9a45c 80%)';
 
 	/* Scale a nowrap headline down until it fits its container. */
 	function fitText(el) {
@@ -170,167 +170,6 @@
 	}
 
 	/* ---------------------------------------------------------------------
-	   DNA helix canvas
-	   --------------------------------------------------------------------- */
-	function initHelix(canvas) {
-		var ctx = canvas.getContext('2d');
-		if (!ctx) {
-			return;
-		}
-		var dpr = Math.min(window.devicePixelRatio || 1, 2);
-		var w = 0;
-		var h = 0;
-		var time = 0;
-		var velocityBoost = 0;
-		var mouseX = 0.5;
-		var mouseY = 0.5;
-		var running = !reduceMotion;
-		var ambient = [];
-
-		function resize() {
-			w = canvas.offsetWidth;
-			h = canvas.offsetHeight;
-			canvas.width = w * dpr;
-			canvas.height = h * dpr;
-			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-			seedAmbient();
-			if (!running) {
-				draw();
-			}
-		}
-
-		function seedAmbient() {
-			ambient = [];
-			var count = Math.round(Math.min(w / 28, 60));
-			for (var i = 0; i < count; i++) {
-				ambient.push({
-					x: Math.random() * w,
-					y: Math.random() * h,
-					r: Math.random() * 1.6 + 0.4,
-					s: Math.random() * 0.25 + 0.05,
-					tw: Math.random() * Math.PI * 2
-				});
-			}
-		}
-
-		function strandColor(which, alpha) {
-			return which === 0
-				? 'rgba(52, 224, 200, ' + alpha + ')'
-				: 'rgba(167, 139, 250, ' + alpha + ')';
-		}
-
-		function draw() {
-			ctx.clearRect(0, 0, w, h);
-
-			var cy = h * 0.52 + (mouseY - 0.5) * 26;
-			var amp = Math.min(h * 0.17, 150);
-			var step = 13;
-			var freq = 0.012;
-			var tilt = (mouseX - 0.5) * 0.55;
-
-			/* ambient drifting particles */
-			for (var a = 0; a < ambient.length; a++) {
-				var pt = ambient[a];
-				pt.y -= pt.s;
-				pt.tw += 0.02;
-				if (pt.y < -4) {
-					pt.y = h + 4;
-					pt.x = Math.random() * w;
-				}
-				ctx.beginPath();
-				ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
-				ctx.fillStyle =
-					'rgba(234, 242, 251, ' +
-					(0.05 + Math.abs(Math.sin(pt.tw)) * 0.1) +
-					')';
-				ctx.fill();
-			}
-
-			/* rungs first (behind strands) */
-			var i;
-			var phase;
-			var y1;
-			var y2;
-			var depth;
-			for (i = -20; i <= w + 20; i += step * 4) {
-				phase = i * freq + time + tilt;
-				y1 = cy + Math.sin(phase) * amp;
-				y2 = cy + Math.sin(phase + Math.PI) * amp;
-				depth = (Math.cos(phase) + 1) / 2;
-				ctx.beginPath();
-				ctx.moveTo(i, y1);
-				ctx.lineTo(i, y2);
-				ctx.strokeStyle =
-					'rgba(234, 242, 251, ' + (0.03 + depth * 0.07) + ')';
-				ctx.lineWidth = 1;
-				ctx.stroke();
-			}
-
-			/* two strands of "nucleotide" dots */
-			for (var s = 0; s < 2; s++) {
-				for (i = -20; i <= w + 20; i += step) {
-					phase = i * freq + time + tilt + s * Math.PI;
-					var y = cy + Math.sin(phase) * amp;
-					depth = (Math.cos(phase) + 1) / 2; /* 0 back — 1 front */
-					var r = 1.1 + depth * 2.1;
-					var alpha = 0.12 + depth * 0.55;
-
-					/* halo */
-					ctx.beginPath();
-					ctx.arc(i, y, r * 2.6, 0, Math.PI * 2);
-					ctx.fillStyle = strandColor(s, alpha * 0.16);
-					ctx.fill();
-					/* core */
-					ctx.beginPath();
-					ctx.arc(i, y, r, 0, Math.PI * 2);
-					ctx.fillStyle = strandColor(s, alpha);
-					ctx.fill();
-				}
-			}
-		}
-
-		function tick() {
-			if (!running) {
-				return;
-			}
-			time += 0.011 + velocityBoost;
-			velocityBoost *= 0.92;
-			draw();
-			requestAnimationFrame(tick);
-		}
-
-		window.addEventListener('resize', resize);
-		if (finePointer) {
-			window.addEventListener('mousemove', function (e) {
-				mouseX = e.clientX / window.innerWidth;
-				mouseY = e.clientY / window.innerHeight;
-			});
-		}
-
-		resize();
-		if (running) {
-			requestAnimationFrame(tick);
-		} else {
-			draw();
-		}
-
-		return {
-			kick: function (v) {
-				velocityBoost = Math.min(Math.abs(v) * 0.00035, 0.05);
-			},
-			pause: function () {
-				running = false;
-			},
-			resume: function () {
-				if (!running && !reduceMotion) {
-					running = true;
-					requestAnimationFrame(tick);
-				}
-			}
-		};
-	}
-
-	/* ---------------------------------------------------------------------
 	   Reduced-motion path: show everything, set final values, bail out
 	   --------------------------------------------------------------------- */
 	function finalizeStatic() {
@@ -339,10 +178,6 @@
 			var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
 			el.textContent = target.toFixed(decimals);
 		});
-		var canvas = document.querySelector('[data-helix]');
-		if (canvas) {
-			initHelix(canvas); /* draws a single static frame */
-		}
 	}
 
 	/* ---------------------------------------------------------------------
@@ -399,24 +234,15 @@
 			});
 		});
 
-		/* ---- helix ---- */
-		var helix = null;
-		var helixCanvas = document.querySelector('[data-helix]');
-		if (helixCanvas) {
-			helix = initHelix(helixCanvas);
-			if (lenis && helix) {
-				lenis.on('scroll', function (e) {
-					helix.kick(e.velocity || 0);
-				});
-			}
+		/* ---- monument scene: camera rides the page scroll ---- */
+		if (window.EPI_SCENE) {
+			window.EPI_SCENE.driven = true;
 			ScrollTrigger.create({
-				trigger: '.hero',
-				start: 'top bottom',
-				end: 'bottom top',
-				onEnter: function () { helix.resume(); },
-				onEnterBack: function () { helix.resume(); },
-				onLeave: function () { helix.pause(); },
-				onLeaveBack: function () { helix.pause(); }
+				start: 0,
+				end: 'max',
+				onUpdate: function (self) {
+					window.EPI_SCENE.setProgress(self.progress);
+				}
 			});
 		}
 
@@ -586,18 +412,6 @@
 		});
 
 		/* ---- hero parallax ---- */
-		if (helixCanvas) {
-			gsap.to(helixCanvas, {
-				yPercent: 18,
-				ease: 'none',
-				scrollTrigger: {
-					trigger: '.hero',
-					start: 'top top',
-					end: 'bottom top',
-					scrub: true
-				}
-			});
-		}
 		var heroInner = document.querySelector('.hero__inner');
 		if (heroInner) {
 			gsap.to(heroInner, {
@@ -612,19 +426,6 @@
 				}
 			});
 		}
-
-		/* ---- aurora drift ---- */
-		gsap.utils.toArray('.aurora').forEach(function (el, i) {
-			gsap.to(el, {
-				xPercent: i % 2 ? -14 : 14,
-				yPercent: i % 2 ? 10 : -10,
-				scale: 1.15,
-				duration: 16 + i * 5,
-				ease: 'sine.inOut',
-				yoyo: true,
-				repeat: -1
-			});
-		});
 
 		/* ---- marquee (GSAP-driven, reacts to scroll velocity) ---- */
 		var track = document.querySelector('[data-marquee-track]');
