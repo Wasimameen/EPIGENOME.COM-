@@ -49,59 +49,23 @@ installing any SMTP plugin (e.g. WP Mail SMTP) fixes deliverability. A spam
 honeypot is built in. Every submission also shows the buyer your direct email
 as a fallback.
 
-== Motion ==
+== Design & motion ==
 
-The design is quiet — warm paper, ink, hairlines — and the motion is
-the craft: a split-curtain intro that plays once per session, masked
-letter and line reveals, a velocity-skewed marquee, comparable sales
-that wipe in as a ledger, an odometer price whose digits roll into
-place, a full-page ink inversion while you read the terms, magnetic
-buttons and an ink cursor.
+Studio look: silver stage, heavy black wordmark, white pill nav, lime
+highlights, dark feature band and offer card, dotted detailing.
 
-Living in the background is an illustrated sky, drawn in the same ink:
-a detailed pixel-art vintage aircraft (hand-shaded sprite with
-dithered highlights, gold cowl, rudder stripes, roundel and a
-propeller-blur disc, built with the Aseprite/pixel-mcp pipeline)
-flies a dashed route through the entire page on real flight physics:
-a spring-damper pursuit chases the scroll target, so the plane lags,
-overshoots and settles naturally; pitch follows climb rate, roll
-foreshortens through turns, layered turbulence keeps it alive at rest,
-it sits level for takeoff and flares for landing — and a hard scroll
-burst sends it through a full loop-the-loop (also on demand via
-EPI_FLIGHT.stunt() in the console). Around
-it: engraved clouds that drift, a hot-air balloon rising past the
-copy, a flock of birds, a slowly turning compass rosette and a faint
-DNA helix, all parallaxed at different depths. Everything respects
-prefers-reduced-motion.
-
-== Cinema mode (v5.1) ==
-
-The flight film now also runs full-bleed behind the hero beneath HUD
-corner brackets and a live heading ticker; the hero letters dodge the
-cursor. An aurora of nebula color drifts behind the whole page. The
-comparable-sales ledger pins and rides sideways as you scroll on wide
-screens. The route plane trails a fading silk contrail and glows
-softly; entering key sections sends a large foreground flyby across
-the viewport with light streaks (EPI_FLIGHT.flyby() triggers one on
-demand). When the odometer price lands, the screen shakes, gold and
-teal sparks burst, and the plane pulls a celebratory loop.
-
-== The flight film ==
-
-The "What it becomes" section carries a 7-second looping cinematic
-film built from a public-domain U.S. Air Force photograph of a P-51
-Mustang (by Tech. Sgt. Ben Bloker), animated with a slow push-in,
-banking drift, fog parallax, a gold glint sweep, dark teal grade and
-film grain. Replace it any time: drop a new clip at
-assets/video/flight.mp4 (+ flight-poster.jpg). A ready-made Google
-Veo 2 prompt and the registered veo2 MCP server live in
-tools/mcp-veo2/ — add your Google API key and ask Claude to generate
-the upgrade.
+The hero centerpiece is a real-time 3D orb (Three.js): a glossy green
+liquid core that morphs smoothly, wrapped in a chrome shell with thin
+orbit wires, lit by a studio environment. It follows the mouse with
+gentle parallax, floats at idle, pauses off-screen and renders a still
+frame for reduced-motion users. Lenis smooth scrolling, soft reveals,
+animated counters, a rolling odometer price and magnetic buttons
+complete the motion. All of it respects prefers-reduced-motion.
 
 == Performance / motion notes ==
 
-* GSAP 3.13, ScrollTrigger and Lenis are bundled locally
-  (no CDN dependency).
+* GSAP 3.13, ScrollTrigger, Lenis and Three.js r147 are bundled
+  locally (no CDN dependency).
 * Fonts are self-hosted in the theme (Cinzel, Cormorant Garamond, Inter,
   IBM Plex Mono) — no Google Fonts request, GDPR-friendly.
 * All animation respects prefers-reduced-motion: users who ask for less
@@ -112,6 +76,6 @@ the upgrade.
 
 * GSAP & ScrollTrigger — gsap.com (standard "no charge" license)
 * Lenis smooth scroll — MIT, darkroom.engineering
-* Fonts — Cinzel, Cormorant Garamond, Inter, IBM Plex Mono (OFL, self-hosted)
-* Flight film — derived from "P-51 Mustang edit1" (U.S. Air Force,
-  public domain, via Wikimedia Commons)
+* Fonts — Archivo, Inter, IBM Plex Mono (OFL, self-hosted; Cinzel and
+  Cormorant Garamond files remain bundled but unused)
+* Three.js — threejs.org (MIT)
