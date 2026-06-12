@@ -66,55 +66,15 @@
 		<path class="sky__route" data-route d="" fill="none"/>
 		<path class="sky__trail" data-trail d="" fill="none"/>
 	</svg>
-	<svg class="sky__plane" data-plane viewBox="-74 -50 148 100">
+	<svg class="sky__plane" data-plane viewBox="-66 -42 132 84">
 		<g data-plane-flip>
 			<g data-plane-bob>
-				<!-- speed dashes -->
-				<g data-speed stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0">
-					<line x1="-70" y1="-10" x2="-58" y2="-10"/>
-					<line x1="-74" y1="0" x2="-60" y2="0"/>
-					<line x1="-70" y1="10" x2="-58" y2="10"/>
+				<g data-speed stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0">
+					<line x1="-64" y1="-12" x2="-50" y2="-12"/>
+					<line x1="-66" y1="0" x2="-52" y2="0"/>
+					<line x1="-64" y1="12" x2="-50" y2="12"/>
 				</g>
-				<g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-					<!-- far wing (upper, behind fuselage) -->
-					<path d="M 2 -7 L -20 -19 C -24 -21, -27 -19, -24 -16 L -2 -5"/>
-					<path d="M -6 -8 L -18 -15" stroke-width="0.6"/>
-					<!-- tail -->
-					<path d="M -41 -1 L -55 -5 C -57 -5.5, -57 -3.5, -55 -2.5 L -42 1.5"/>
-					<path d="M -44 -1 C -49 -8, -52 -15, -52 -21 C -49 -21, -44 -17, -41 -11 C -40 -7, -40 -4, -41 -1.5"/>
-					<path d="M -45 -5 C -47 -9, -49 -13, -50 -17" stroke-width="0.7"/>
-					<!-- fuselage -->
-					<path d="M -50 0 C -36 -7, -8 -9, 12 -8 C 28 -7, 40 -5, 47 0 C 40 5, 26 7.5, 8 8 C -12 8.5, -38 5, -50 0 Z"/>
-					<path d="M -26 -7 C -26 -2, -26 3, -25 6" stroke-width="0.6"/>
-					<path d="M 20 -7.5 C 20 -2, 20 3, 19 6.5" stroke-width="0.6"/>
-					<!-- canopy -->
-					<path d="M -4 -8 C -2 -12.5, 6 -12.5, 8 -8"/>
-					<path d="M 2 -12.2 L 2 -8" stroke-width="0.7"/>
-					<!-- engine cowl -->
-					<path d="M 44 -5 C 49 -4, 49 4, 44 5"/>
-					<path d="M 45 -4.6 L 45 4.6" stroke-width="0.6"/>
-					<path d="M 38 5.5 L 33 8.5" stroke-width="1"/>
-					<!-- near wing (lower, toward viewer) -->
-					<path d="M 4 1 L -18 17 C -22 20, -26 17, -23 13 L 0 -2"/>
-					<path d="M -2 4 L -19 15" stroke-width="0.6"/>
-					<path d="M 1 1.5 L -21 13.5" stroke-width="0.6"/>
-					<!-- landing gear -->
-					<path d="M 6 8 L 4 16 M 16 6.5 L 16 15" stroke-width="1"/>
-					<path d="M 4 16 L 16 15" stroke-width="0.7"/>
-					<circle cx="4" cy="18.5" r="3"/>
-					<circle cx="16" cy="17.5" r="3"/>
-					<circle cx="4" cy="18.5" r="0.7" fill="currentColor" stroke="none"/>
-					<circle cx="16" cy="17.5" r="0.7" fill="currentColor" stroke="none"/>
-				</g>
-				<!-- roundel -->
-				<circle cx="-16" cy="-1.5" r="4.5" fill="none" stroke="currentColor" stroke-width="1"/>
-				<circle cx="-16" cy="-1.5" r="1.8" class="sky__gold"/>
-				<!-- propeller -->
-				<g data-prop>
-					<ellipse cx="51" cy="-11" rx="1.7" ry="10" fill="none" stroke="currentColor" stroke-width="0.9"/>
-					<ellipse cx="51" cy="9" rx="1.7" ry="10" fill="none" stroke="currentColor" stroke-width="0.9"/>
-				</g>
-				<circle cx="51" cy="-1" r="2" fill="currentColor"/>
+				<image x="-66" y="-42" width="132" height="84" href="<?php echo esc_url( get_template_directory_uri() . '/assets/img/plane-sprite.png' ); ?>"/>
 			</g>
 		</g>
 	</svg>

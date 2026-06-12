@@ -333,12 +333,13 @@ a, button { cursor: pointer; }
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: clamp(110px, 12vw, 170px);
+	width: clamp(120px, 13vw, 190px);
 	height: auto;
 	overflow: visible;
-	opacity: 0.85;
+	opacity: 0.95;
 	will-change: transform;
 }
+.sky__plane image { image-rendering: pixelated; }
 .sky__gold { fill: var(--gold); stroke: none; }
 
 .sky__decor {

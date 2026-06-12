@@ -59,8 +59,10 @@ place, a full-page ink inversion while you read the terms, magnetic
 buttons and an ink cursor.
 
 Living in the background is an illustrated sky, drawn in the same ink:
-a detailed vintage aircraft — spinning propeller, spoked wheels, gold
-roundel — flies a dashed route through the entire page as you scroll,
+a detailed pixel-art vintage aircraft (hand-shaded sprite with
+dithered highlights, gold cowl, rudder stripes, roundel and a
+propeller-blur disc, built with the Aseprite/pixel-mcp pipeline)
+flies a dashed route through the entire page as you scroll,
 its trail turning solid behind it, banking with the curves, bobbing
 while you rest, and showing speed lines when you scroll fast. Around
 it: engraved clouds that drift, a hot-air balloon rising past the

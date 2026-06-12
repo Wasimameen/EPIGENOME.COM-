@@ -10,6 +10,11 @@
       "env": {
         "PEXELS_API_KEY": "your_key_here"
       }
+    },
+    "pixel": {
+      "type": "stdio",
+      "command": "./tools/pixel-mcp/pixel-mcp",
+      "args": []
     }
   }
 }
