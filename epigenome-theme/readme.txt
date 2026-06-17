@@ -23,12 +23,22 @@ Everything sale-related is under Appearance → Customize → Domain Listing:
 * Asking price          — default $14,888 (shown in nav, hero, comps verdict, terms)
 * Lease-to-own          — optional checkbox + monthly figure; when enabled the
                           Terms section shows the dual lump-sum / monthly frame
-* Contact email         — where the offer form delivers (defaults to admin email)
-* Contact phone         — optional, shown in the footer
+* Contact email         — shown on the left of the top bar, and where the offer
+                          form delivers (defaults to admin email)
+* Contact phone         — shown on the left of the top bar and in the footer
+* Top bar location       — right side of the top bar (e.g. "Worldwide · remote
+                          transfer"); leave blank to hide
+* Top bar availability   — right side of the top bar (e.g. "Available — replies
+                          same day"); leave blank to hide
 * Buy Now link          — your Escrow.com / Afternic / Dan checkout link;
                           when empty, Buy Now buttons open a pre-filled email
 * Seller / broker name and affiliation
 * Listing label         — the small "N° 01 — 2026" kicker in the hero
+
+The top contact bar sits above the navigation: email and phone on the left,
+availability and location on the right. It slides up out of the way as you
+scroll down and returns at the top of the page. Any field left blank in the
+Customizer is simply omitted, and its divider with it.
 
 == Things you should edit before going live ==
 
@@ -51,16 +61,22 @@ as a fallback.
 
 == Design & motion ==
 
-Studio look: silver stage, heavy black wordmark, white pill nav, lime
-highlights, dark feature band and offer card, dotted detailing.
+Studio look: a dark top contact bar, silver stage, heavy black wordmark,
+white pill nav, lime highlights, dark feature band and offer card, dotted
+detailing.
+
+The top contact bar fades in on load with a pulsing "available" indicator,
+then tucks away as you scroll and slides back at the top. A slim lime
+reading-progress line tracks how far down the page you are.
 
 The hero centerpiece is a real-time 3D orb (Three.js): a glossy green
 liquid core that morphs smoothly, wrapped in a chrome shell with thin
-orbit wires, lit by a studio environment. It follows the mouse with
-gentle parallax, floats at idle, pauses off-screen and renders a still
-frame for reduced-motion users. Lenis smooth scrolling, soft reveals,
-animated counters, a rolling odometer price and magnetic buttons
-complete the motion. All of it respects prefers-reduced-motion.
+orbit wires, lit by a studio environment and a slow-drifting aurora glow.
+It follows the mouse with gentle parallax, floats at idle, pauses
+off-screen and renders a still frame for reduced-motion users. Lenis
+smooth scrolling, soft reveals, animated counters, a rolling odometer
+price and magnetic buttons complete the motion. All of it respects
+prefers-reduced-motion.
 
 == Performance / motion notes ==
 

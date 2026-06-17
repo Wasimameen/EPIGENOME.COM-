@@ -126,24 +126,40 @@
 			});
 		});
 
-		/* ---- nav hide on scroll down ---- */
+		/* ---- top bar tuck + nav hide + scroll progress ---- */
 		var nav = document.querySelector('[data-nav]');
-		if (nav) {
-			var lastY = 0;
-			ScrollTrigger.create({
-				start: 0,
-				end: 'max',
-				onUpdate: function (self) {
-					var y = self.scroll();
-					if (y > 220 && y > lastY + 5) {
+		var progress = document.querySelector('[data-progress]');
+		var lastY = 0;
+		ScrollTrigger.create({
+			start: 0,
+			end: 'max',
+			onUpdate: function (self) {
+				var y = self.scroll();
+
+				/* contact bar tucks away (and nav floats up) once you leave the top */
+				if (y > 60) {
+					docEl.classList.add('is-scrolled');
+				} else {
+					docEl.classList.remove('is-scrolled');
+				}
+
+				/* nav hides on a fast scroll down, returns on scroll up */
+				if (nav) {
+					if (y > 240 && y > lastY + 5) {
 						nav.classList.add('nav--hidden');
-					} else if (y < lastY - 5 || y <= 220) {
+					} else if (y < lastY - 5 || y <= 240) {
 						nav.classList.remove('nav--hidden');
 					}
-					lastY = y;
 				}
-			});
-		}
+
+				/* reading-progress line */
+				if (progress) {
+					progress.style.transform = 'scaleX(' + self.progress.toFixed(4) + ')';
+				}
+
+				lastY = y;
+			}
+		});
 
 		/* ---- hero word: fit, fade in, gentle parallax ---- */
 		var word = document.querySelector('[data-fit]');

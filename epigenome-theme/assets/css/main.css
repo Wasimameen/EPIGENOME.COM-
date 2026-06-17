@@ -684,6 +684,160 @@ html.js-anim .hero__word { opacity: 0; }
 .footer__legal { font-size: 0.7rem; color: var(--ink-soft); opacity: 0.8; }
 
 /* --------------------------------------------------------------------------
+   Scroll progress line — thin lime bar pinned to the very top edge
+   -------------------------------------------------------------------------- */
+.scroll-progress {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 70;
+	width: 100%;
+	height: 3px;
+	transform: scaleX(0);
+	transform-origin: left center;
+	background: linear-gradient(90deg, var(--lime-deep), var(--lime));
+	box-shadow: 0 0 12px rgba(184, 222, 38, 0.6);
+	pointer-events: none;
+	will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+   Top contact bar — email + phone (left), availability + transfer (right)
+   -------------------------------------------------------------------------- */
+:root { --topbar-h: 2.8rem; }
+
+.topbar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 60;
+	background: linear-gradient(180deg, #0c0d0f, #131418);
+	color: rgba(255, 255, 255, 0.82);
+	border-bottom: 1px solid rgba(212, 246, 74, 0.16);
+	transition: transform 0.5s var(--ease);
+}
+html.is-scrolled .topbar { transform: translateY(-100%); }
+
+.topbar__inner {
+	max-width: 84rem;
+	margin-inline: auto;
+	min-height: var(--topbar-h);
+	padding: 0.25rem clamp(1.2rem, 4vw, 2.4rem);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	font-family: var(--font-mono);
+	font-size: 0.74rem;
+	letter-spacing: 0.01em;
+	animation: topbarIn 0.7s var(--ease) both 0.12s;
+}
+
+.topbar__group { display: flex; align-items: center; gap: 0.85rem; min-width: 0; }
+
+.topbar__item {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: inherit;
+	white-space: nowrap;
+	transition: color 0.25s var(--ease);
+}
+.topbar__item--muted { color: rgba(255, 255, 255, 0.6); }
+a.topbar__item:hover { color: #fff; }
+
+.topbar__icon {
+	width: 15px;
+	height: 15px;
+	flex: none;
+	color: var(--lime);
+	transition: transform 0.25s var(--ease);
+}
+a.topbar__item:hover .topbar__icon { transform: translateY(-1px) scale(1.1); }
+
+/* animated underline on the contact links */
+.topbar__item span { position: relative; }
+a.topbar__item span::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -3px;
+	height: 1px;
+	background: var(--lime);
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform 0.3s var(--ease);
+}
+a.topbar__item:hover span::after { transform: scaleX(1); }
+
+.topbar__sep { width: 1px; height: 13px; background: rgba(255, 255, 255, 0.2); flex: none; }
+
+.topbar__status { display: inline-flex; align-items: center; gap: 0.55rem; white-space: nowrap; }
+.topbar__dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--lime);
+	flex: none;
+	box-shadow: 0 0 0 0 rgba(212, 246, 74, 0.55);
+	animation: dotPulse 2.4s var(--ease) infinite;
+}
+
+@keyframes topbarIn {
+	from { opacity: 0; transform: translateY(-6px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+@keyframes dotPulse {
+	0% { box-shadow: 0 0 0 0 rgba(212, 246, 74, 0.5); }
+	70% { box-shadow: 0 0 0 7px rgba(212, 246, 74, 0); }
+	100% { box-shadow: 0 0 0 0 rgba(212, 246, 74, 0); }
+}
+
+/* nav now sits just beneath the contact bar, and floats up once scrolling */
+.nav {
+	top: calc(var(--topbar-h) + 0.7rem);
+	transition: transform 0.5s var(--ease), opacity 0.4s, top 0.5s var(--ease);
+}
+html.is-scrolled .nav { top: 1.1rem; }
+
+@media (max-width: 64rem) {
+	.topbar__loc { display: none; }
+}
+@media (max-width: 48rem) {
+	:root { --topbar-h: 2.5rem; }
+	.topbar__inner { font-size: 0.68rem; gap: 0.6rem; justify-content: center; }
+	.topbar__group--right { display: none; }
+}
+@media (max-width: 30rem) {
+	.topbar__group--left .topbar__item:first-child span { display: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Hero aurora — slow drifting glow behind the wordmark and orb
+   -------------------------------------------------------------------------- */
+.hero__aurora {
+	position: absolute;
+	inset: -12%;
+	z-index: 0;
+	pointer-events: none;
+	background:
+		radial-gradient(38% 36% at 30% 30%, rgba(212, 246, 74, 0.22), transparent 60%),
+		radial-gradient(42% 40% at 74% 26%, rgba(150, 212, 30, 0.16), transparent 62%),
+		radial-gradient(46% 44% at 60% 82%, rgba(120, 190, 255, 0.10), transparent 60%);
+	filter: blur(26px);
+	opacity: 0.7;
+	animation: auroraDrift 20s ease-in-out infinite alternate;
+}
+@keyframes auroraDrift {
+	0% { transform: translate3d(-3%, -2%, 0) scale(1.04); }
+	50% { transform: translate3d(3%, 2%, 0) scale(1.12); }
+	100% { transform: translate3d(-2%, 3%, 0) scale(1.06); }
+}
+
+/* --------------------------------------------------------------------------
    Animation helpers + reduced motion
    -------------------------------------------------------------------------- */
 html.js-anim [data-reveal] { opacity: 0; }
@@ -692,6 +846,9 @@ html.js-anim [data-reveal] { opacity: 0; }
 	html { scroll-behavior: auto; }
 	html.js-anim [data-reveal] { opacity: 1; }
 	html.js-anim .hero__word { opacity: 1; }
+	.topbar { transform: none !important; }
+	.topbar__inner { opacity: 1 !important; }
+	.hero__aurora { animation: none !important; }
 	*, *::before, *::after {
 		transition-duration: 0.01ms !important;
 		animation-duration: 0.01ms !important;

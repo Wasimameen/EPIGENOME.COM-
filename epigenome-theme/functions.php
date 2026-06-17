@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'EPIGENOME_VERSION', '6.0.0' );
+define( 'EPIGENOME_VERSION', '6.1.0' );
 
 require get_template_directory() . '/inc/customizer.php';
 
@@ -56,19 +56,31 @@ add_action( 'wp_enqueue_scripts', 'epigenome_assets' );
  */
 function epigenome_opt( $key ) {
 	$defaults = array(
-		'domain_name'   => 'EPIGENOME.COM',
-		'price'         => '$14,888',
-		'lto_enabled'   => '',
-		'lto_monthly'   => '$1,240 / month',
-		'contact_email' => get_option( 'admin_email' ),
-		'contact_phone' => '',
-		'buy_link'      => '',
-		'broker_name'   => 'Tom McCarthy',
-		'broker_org'    => 'GoDaddy',
-		'listing_no'    => 'N° 01 — 2026',
+		'domain_name'      => 'EPIGENOME.COM',
+		'price'            => '$14,888',
+		'lto_enabled'      => '',
+		'lto_monthly'      => '$1,240 / month',
+		'contact_email'    => get_option( 'admin_email' ),
+		'contact_phone'    => '+1 (480) 758-2520',
+		'contact_location' => 'Worldwide · remote transfer',
+		'contact_status'   => 'Available — replies same day',
+		'buy_link'         => '',
+		'broker_name'      => 'Tom McCarthy',
+		'broker_org'       => 'GoDaddy',
+		'listing_no'       => 'N° 01 — 2026',
 	);
 	$default  = isset( $defaults[ $key ] ) ? $defaults[ $key ] : '';
 	return get_theme_mod( 'epigenome_' . $key, $default );
+}
+
+/**
+ * Build a tel: href from a human-formatted phone number.
+ *
+ * @param string $phone Phone number as displayed.
+ * @return string
+ */
+function epigenome_tel_href( $phone ) {
+	return 'tel:' . preg_replace( '/[^0-9+]/', '', $phone );
 }
 
 /**

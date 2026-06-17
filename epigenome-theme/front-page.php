@@ -53,6 +53,7 @@ $epigenome_comps = array(
 	<!-- ============================== HERO ============================== -->
 	<section class="hero" id="top">
 		<div class="hero__stage">
+			<div class="hero__aurora" aria-hidden="true"></div>
 			<h1 class="hero__word" data-fit aria-label="<?php echo esc_attr( $domain ); ?>"><?php echo esc_html( $word ); ?><span class="hero__word-dot">.</span></h1>
 
 			<div class="hero__orb">
